@@ -3,3 +3,13 @@
 .vscode
 
 /cmake-build-debug/
+subprojects/abseil-cpp-*/
+subprojects/boringssl/
+subprojects/brotli-*/
+subprojects/fmt-*/
+subprojects/googletest-*/
+subprojects/lz4-*/
+subprojects/packagecache/
+subprojects/protobuf-*/
+subprojects/zlib-*/
+subprojects/zstd-*/
