@@ -1,0 +1,38 @@
+name: Build darwin
+
+# Controls when the action will run. 
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    name: Build on macos-latest
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        type: ['Release', 'Debug']
+#        os: ['macos-latest', 'ubuntu-22.04']
+    steps:
+      - name: install macOS deps
+        run: |
+          brew update
+          # workaround for https://github.com/actions/setup-python/issues/577
+          brew list -1 | grep python | while read formula; do brew unlink $formula; brew link --overwrite $formula; done
+          brew install cmake meson
+      - name: patch help
+        run: patch --help
+      - name: checkout from git
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2.18
+#        with:
+#          key: ${{ matrix.os }}-${{ matrix.type }}
+
+      - name: configure
+        run: meson setup build
+      - name: build
+        run: ninja -C build
