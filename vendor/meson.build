@@ -114,20 +114,14 @@ run_command(
   capture: false,
 )
 
-# TODO
-deleteme = find_program('tree')
-deleteme2 = find_program('sh')
-run_command(
-  deleteme2, '-c', 'cd "$1" && "$2"', deleteme2, meson.project_source_root(), deleteme,
-  check: true,
-  capture: true,
-)
-
 #
 # boringssl
 #
 cmake = import('cmake')
-boringssl_sub = cmake.subproject('boringssl')
+boringssl_sub = cmake.subproject('boringssl', required: false)
+if not boringssl_sub.found()
+  error('Please rerun \'meson configure\' to proceed with the build. See TODO for more info.')
+endif
 boringssl_crypto = boringssl_sub.dependency('crypto')
 boringssl_ssl = boringssl_sub.dependency('ssl')
 
