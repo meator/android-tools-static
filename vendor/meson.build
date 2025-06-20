@@ -116,9 +116,9 @@ run_command(
 
 # TODO
 deleteme = find_program('tree')
-deleteme2 = find_program('env')
+deleteme2 = find_program('sh')
 run_command(
-  deleteme2, '-C', meson.project_source_root(), deleteme,
+  deleteme2, '-c', 'cd "$1" && "$2"', deleteme2, meson.project_source_root(), deleteme,
   check: true,
   capture: true,
 )
