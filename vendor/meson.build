@@ -114,6 +114,15 @@ run_command(
   capture: false,
 )
 
+# TODO
+deleteme = find_program('tree')
+deleteme2 = find_program('env')
+run_command(
+  deleteme2, '-C', meson.project_source_root(), deleteme,
+  check: true,
+  capture: true,
+)
+
 #
 # boringssl
 #
