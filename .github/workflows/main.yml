@@ -19,7 +19,8 @@ jobs:
           brew update
           # workaround for https://github.com/actions/setup-python/issues/577
           brew list -1 | grep python | while read formula; do brew unlink $formula; brew link --overwrite $formula; done
-          brew install cmake meson
+          # TODO: remove tree
+          brew install cmake meson tree
       - name: patch help
         run: patch --help
       - name: checkout from git
