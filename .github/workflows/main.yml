@@ -32,6 +32,6 @@ jobs:
 #          key: ${{ matrix.os }}-${{ matrix.type }}
 
       - name: configure
-        run: meson setup build || meson setup build
+        run: meson setup build || meson setup build --wrap-mode=forcefallback
       - name: build
         run: ninja -C build
