@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36" version="28.0.9">
+  <diagram name="Page-1" id="G5-xiO7Yde-p7iUY-BRW">
+    <mxGraphModel dx="872" dy="469" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="vxFLdMdECQ-iYrfq1FJW-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="vxFLdMdECQ-iYrfq1FJW-1" target="vxFLdMdECQ-iYrfq1FJW-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vxFLdMdECQ-iYrfq1FJW-1" value="git clone meator/android-tools-static" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 8;" vertex="1" parent="1">
+          <mxGeometry x="137.5" y="100" width="210" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vxFLdMdECQ-iYrfq1FJW-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="vxFLdMdECQ-iYrfq1FJW-3" target="vxFLdMdECQ-iYrfq1FJW-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vxFLdMdECQ-iYrfq1FJW-3" value="clone all submodules&lt;div&gt;(cloning boringssl isn&#39;t technically necessary, since it is handled as a Wrap in android-tools-static)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="110" y="150" width="265" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="vxFLdMdECQ-iYrfq1FJW-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="vxFLdMdECQ-iYrfq1FJW-4" target="vxFLdMdECQ-iYrfq1FJW-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vxFLdMdECQ-iYrfq1FJW-4" value="meson setup&lt;div&gt;&lt;hr&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="127.5" y="240" width="230" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="vxFLdMdECQ-iYrfq1FJW-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="vxFLdMdECQ-iYrfq1FJW-5" target="vxFLdMdECQ-iYrfq1FJW-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vxFLdMdECQ-iYrfq1FJW-5" value="apply all patches in &lt;code&gt;patches/&lt;/code&gt; subdirectory to submodules" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 8;" vertex="1" parent="1">
+          <mxGeometry x="147.5" y="280" width="190" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="vxFLdMdECQ-iYrfq1FJW-6" value="fetch all wraps including boringssl (which is handled as a CMake Wrap)" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 8;" vertex="1" parent="1">
+          <mxGeometry x="138.75" y="340" width="207.5" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="vxFLdMdECQ-iYrfq1FJW-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="vxFLdMdECQ-iYrfq1FJW-7" target="vxFLdMdECQ-iYrfq1FJW-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vxFLdMdECQ-iYrfq1FJW-7" value="meson compile" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="192.5" y="420" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vxFLdMdECQ-iYrfq1FJW-8" value="meson install" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="195" y="470" width="95" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vxFLdMdECQ-iYrfq1FJW-15" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;" edge="1" parent="1" source="vxFLdMdECQ-iYrfq1FJW-14" target="vxFLdMdECQ-iYrfq1FJW-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vxFLdMdECQ-iYrfq1FJW-14" value="On Windows, the AdbWinApi libraries (&lt;code&gt;AdbWinApi.dll&lt;/code&gt;&amp;nbsp;and&amp;nbsp;&lt;code&gt;AdbWinUsbApi.dll&lt;/code&gt;) need to be installed into locations where Windows will be able to pick them up. The simplest way to achieve that is to install them into the same directory the primary executables (adb, fastboot) are in. The&amp;nbsp;&lt;code&gt;nativefiles/release_configuration_standardlayout.ini&lt;/code&gt; native file enforces this." style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=25;verticalAlign=top;align=center;fillColor=#fff2cc;strokeColor=#d6b656;labelBorderColor=none;spacing=2;spacingLeft=2;spacingRight=2;" vertex="1" parent="1">
+          <mxGeometry x="375" y="350" width="412.5" height="150" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
