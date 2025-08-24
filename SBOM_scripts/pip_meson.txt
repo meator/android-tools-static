@@ -1,0 +1,11 @@
+    meson_component = cyclonedx.generic_component.generate(
+        name="meson",
+        version=meson_version,
+        description="Meson build system",
+        c_type=ComponentType.application,
+        ref=purldb[PurlNames.pip_meson],
+        supplier=ComponentSupplier(
+            name="Python Package Index", url="https://pypi.org/"
+        ),
+    )
+

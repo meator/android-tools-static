@@ -1,0 +1,13 @@
+[tool.ruff.lint]
+# First four warning types are enabled by default.
+select = ["E4", "E7", "E9", "F", "C90", "I", "N", "D", "B", "RUF100"]
+ignore = [
+  # README.md files are provided for documenting subpackages. Having
+  # empty __init__.py files is standard practice.
+  "D104", # Missing docstring in public package
+  # SBOM_scripts is an invalid name, but it is never imported,
+  # packaged or installed. It is not public API, so its name doesn't
+  # matter.
+  "N999", # Invalid module name: 'SBOM_scripts'
+]
+pydocstyle.convention = "google"

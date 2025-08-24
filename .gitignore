@@ -17,3 +17,4 @@ subprojects/AdbWinApi-*/
 subprojects/libusb-*/
 subprojects/boringssl-*/
 subprojects/pcre2-*/
+SBOM_scripts/**/__pycache__/
