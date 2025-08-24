@@ -1,0 +1,526 @@
+name: Make a release
+
+# Controls when the action will run.
+on:
+  push:
+    tags:
+      - '*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # The hash below **must** be kept up-to-date with the hash in uses: at the
+  # bottom of this file.
+  GH_RELEASE_VER: 72f2c25fcb47643c292f7107632f7a47c1df5cd8
+
+jobs:
+  container-info:
+    runs-on: ubuntu-latest
+    name: Retrieve info used across all other jobs
+    outputs:
+      LINUX_VER: ${{ steps.info.outputs.LINUX_VER }}
+      WIN_VER: ${{ steps.info.outputs.WIN_VER }}
+      MACOS_VER: ${{ steps.info.outputs.MACOS_VER }}
+      PROJECT_VERSION: ${{ steps.info.outputs.PROJECT_VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set container info
+        id: info
+        run: |
+          # Set runner images
+          echo "LINUX_VER=ubuntu-24.04" >> "$GITHUB_OUTPUT"
+          echo "WIN_VER=windows-2022" >> "$GITHUB_OUTPUT"
+          echo "MACOS_VER=macos-14" >> "$GITHUB_OUTPUT"
+          # Set project version
+          echo "PROJECT_VERSION=$(cat VERSION.txt)" >> "$GITHUB_OUTPUT"
+
+  setup-source-repo:
+    runs-on: ${{ needs.container-info.outputs.LINUX_VER }}
+    name: Fetch, extract and patch the source
+    needs: container-info
+    steps:
+      # - name: Cache source
+      #   id: cache
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: source.tar
+      #     key: source-cache
+      - uses: actions/checkout@v4
+        # if: steps.cache.outputs.cache-hit != 'true'
+        timeout-minutes: 15
+        with:
+          path: repo
+          submodules: true
+      - name: Get Meson
+        # if: steps.cache.outputs.cache-hit != 'true'
+        run: pipx install meson
+      - name: Setup a builddir to patch vendor and to fetch wraps
+        # if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          meson subprojects download --sourcedir=repo
+          patch repo/vendor/meson.build < repo/onlypatch.patch
+          meson setup ignored_builddir repo --wrap-mode=forcefallback
+          patch -R repo/vendor/meson.build < repo/onlypatch.patch
+      - name: Produce source archive
+        # if: steps.cache.outputs.cache-hit != 'true'
+        run: tar -cf source.tar -C repo --exclude=subprojects/packagecache .
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: source
+          path: source.tar
+          if-no-files-found: error
+          retention-days: 1
+
+  win-build:
+    runs-on: ${{ needs.container-info.outputs.WIN_VER }}
+    name: Build android-tools on Windows
+    needs: [container-info, setup-source-repo]
+    strategy:
+      matrix:
+        archinfo:
+          - arch: x86_64
+            msys2_env: UCRT64
+            meson_pkg: mingw-w64-ucrt-x86_64-meson
+            gcc_pkg: mingw-w64-ucrt-x86_64-gcc
+            cmake_pkg: mingw-w64-ucrt-x86_64-cmake
+            nasm_pkg: mingw-w64-ucrt-x86_64-nasm
+          - arch: x86
+            msys2_env: MINGW32
+            meson_pkg: mingw-w64-i686-meson
+            gcc_pkg: mingw-w64-i686-gcc
+            cmake_pkg: mingw-w64-i686-cmake
+            nasm_pkg: mingw-w64-i686-nasm
+
+    steps:
+      # - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: source
+      - name: Extract source
+        run: tar -xf source.tar
+
+      - name: Setup MSYS2
+        # The hash below **must** be kept up-to-date with the hash in Generate SBOM.
+        # v2.28.0
+        uses: msys2/setup-msys2@40677d36a502eb2cf0fb808cc9dec31bf6152638
+        with:
+          msystem: ${{ matrix.archinfo.msys2_env }}
+          install: >
+            patch git ${{ matrix.archinfo.meson_pkg }}
+            ${{ matrix.archinfo.gcc_pkg }}
+            ${{ matrix.archinfo.cmake_pkg }}
+            ${{ matrix.archinfo.nasm_pkg }}
+      - name: Setup the builddir
+        shell: msys2 {0}
+        run: >
+          meson setup build --native-file nativefiles/release_configuration.ini
+          --native-file nativefiles/release_configuration_fullstatic.ini
+          --native-file nativefiles/release_configuration_standardlayout.ini
+          --licensedir license
+          -Dgenerate_sbom_data=true
+      - name: Build
+        shell: msys2 {0}
+        run: ninja -C build
+      - name: Install
+        shell: msys2 {0}
+        run: |
+          mkdir android-tools-static
+          meson install -C build --destdir "$PWD/android-tools-static"
+      - name: Generate SBOM
+        shell: msys2 {0}
+        env:
+          # The hash below **must** be kept up-to-date with the hash in uses: above.
+          SETUP_MSYS2_VER: 40677d36a502eb2cf0fb808cc9dec31bf6152638
+        run: >
+          python3 SBOM_scripts/windows.py
+          $(realpath .)
+          android-tools-static/license/depmf.json
+          "pkg:github/${{ github.repository }}"
+          android-tools-static/license/nmeum_patches.bin
+          android-tools-static/license/added_patches.bin
+          "https://github.com/${{ github.repository }}"
+          https://github.com/"${{ github.repository }}"/blob/'${ref}/${path}'
+          false
+          ${{ matrix.archinfo.arch }}
+          ${{ needs.container-info.outputs.WIN_VER }}
+          $GH_RELEASE_VER
+          ${{ matrix.archinfo.meson_pkg }}
+          ${{ matrix.archinfo.gcc_pkg }}
+          ${{ matrix.archinfo.cmake_pkg }}
+          ${{ matrix.archinfo.nasm_pkg }}
+          $SETUP_MSYS2_VER
+          > android-tools-static/SBOM.json
+      - name: Delete licensedir
+        run: rm -r android-tools-static/license
+      - name: Archive the artifacts
+        shell: bash
+        run: tar -cf android-tools-static-windows-${{ matrix.archinfo.arch }}.tar android-tools-static
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build-${{ matrix.archinfo.arch }}
+          path: android-tools-static-windows-${{ matrix.archinfo.arch }}.tar
+          if-no-files-found: error
+          retention-days: 1
+
+  linux-build:
+    runs-on: ${{ needs.container-info.outputs.LINUX_VER }}
+    name: Native compile android-tools on Alpine Linux
+    needs: [container-info, setup-source-repo]
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: source
+      - name: Extract source
+        run: tar -oxf source.tar
+
+      - name: Setup latest Alpine Linux
+        # The hash below **must** be kept up-to-date with the hash in Generate SBOM.
+        # v1.3.0
+        uses: jirutka/setup-alpine@cf5fddcea495dcc19c0f991c6f6fa6a7abf3d50a
+        with:
+          branch: v3.22
+          packages: git meson gcc g++ cmake patch linux-headers pandoc-cli
+
+      - name: Setup the builddir
+        shell: alpine.sh {0}
+        run: >
+          meson setup build --native-file nativefiles/release_configuration.ini
+          --native-file nativefiles/release_configuration_fullstatic.ini
+          --native-file nativefiles/release_configuration_standardlayout.ini
+          --licensedir license
+          -Dgenerate_sbom_data=true
+          -Dgenerate_manpages=enabled
+      - name: Build
+        shell: alpine.sh {0}
+        run: ninja -C build
+      - name: Install
+        shell: alpine.sh {0}
+        run: |
+          mkdir android-tools-static
+          meson install -C build --destdir "$PWD/android-tools-static"
+      - name: Generate SBOM
+        shell: alpine.sh {0}
+        env:
+          # The hash below **must** be kept up-to-date with the hash in uses: above.
+          SETUP_ALPINE_VER: cf5fddcea495dcc19c0f991c6f6fa6a7abf3d50a
+        run: >
+          python3 SBOM_scripts/alpine_native.py
+          $(realpath .)
+          android-tools-static/license/depmf.json
+          "pkg:github/${{ github.repository }}"
+          android-tools-static/license/nmeum_patches.bin
+          android-tools-static/license/added_patches.bin
+          "https://github.com/${{ github.repository }}"
+          https://github.com/"${{ github.repository }}"/blob/'${ref}/${path}'
+          false
+          x86_64
+          ${{ needs.container-info.outputs.LINUX_VER }}
+          $GH_RELEASE_VER
+          $SETUP_ALPINE_VER
+          > android-tools-static/SBOM.json
+      - name: Delete licensedir
+        run: rm -r android-tools-static/license
+      - name: Archive the artifacts
+        run: tar -cf android-tools-static-linux-x86_64.tar android-tools-static
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build-x86_64
+          path: android-tools-static-linux-x86_64.tar
+          if-no-files-found: error
+          retention-days: 1
+
+  linux-build-cross:
+    runs-on: ${{ needs.container-info.outputs.LINUX_VER }}
+    name: Cross compile android-tools on Alpine Linux
+    needs: [container-info, setup-source-repo]
+    strategy:
+      matrix:
+        archinfo:
+          - arch: aarch64
+            container_suffix: aarch64
+          - arch: ppc64le
+            container_suffix: powerpc64le
+          - arch: riscv64
+            container_suffix: riscv64
+          - arch: armv6l
+            container_suffix: arm
+          - arch: armv7l
+            container_suffix: armhf
+    container: ghcr.io/meator/musl-cross-make-alpine-${{ matrix.archinfo.container_suffix }}:latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: source
+      - name: Extract source
+        run: tar -oxf source.tar
+
+      - name: Install dependencies from Alpine Linux repositories
+        run: apk add git meson gcc g++ cmake patch linux-headers
+
+      - name: Fix git safe dirs
+        run: git config --global --add safe.directory '*'
+      - name: Setup the builddir
+        run: >
+          meson setup build --cross-file nativefiles/release_configuration.ini
+          --cross-file nativefiles/release_configuration_fullstatic.ini
+          --cross-file nativefiles/release_configuration_standardlayout.ini
+          --cross-file crossfiles/${{ matrix.archinfo.arch }}.ini
+          --licensedir license
+          -Dgenerate_sbom_data=true
+      - name: Build
+        run: ninja -C build
+      - name: Install
+        run: |
+          mkdir android-tools-static
+          meson install -C build --destdir "$PWD/android-tools-static"
+      - name: Generate SBOM
+        # It makes less sense to provide ${{ vars.LINUX_RUNNER }} to the SBOM script in
+        # linux-build-cross because the Alpine container is used for building exclusively,
+        # but the runner used still has influence over the build process in other jobs
+        # (the initial job which packs up the source code, the last job which makes the
+        # release...).
+        run: >
+          python3 SBOM_scripts/alpine_cross.py
+          $(realpath .)
+          android-tools-static/license/depmf.json
+          "pkg:github/${{ github.repository }}"
+          android-tools-static/license/nmeum_patches.bin
+          android-tools-static/license/added_patches.bin
+          "https://github.com/${{ github.repository }}"
+          https://github.com/"${{ github.repository }}"/blob/'${ref}/${path}'
+          false
+          ${{ matrix.archinfo.arch }}
+          ${{ needs.container-info.outputs.LINUX_VER }}
+          $GH_RELEASE_VER
+          > android-tools-static/SBOM.json
+      - name: Delete licensedir
+        run: rm -r android-tools-static/license
+      - name: Archive the artifacts
+        run: tar -cf android-tools-static-linux-${{ matrix.archinfo.arch }}.tar android-tools-static
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build-${{ matrix.archinfo.arch }}
+          path: android-tools-static-linux-${{ matrix.archinfo.arch }}.tar
+          if-no-files-found: error
+          retention-days: 1
+
+  macos-build-x86_64:
+    runs-on: ${{ needs.container-info.outputs.MACOS_VER }}
+    name: Build android-tools on macOS (x86_64)
+    needs: [container-info, setup-source-repo]
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: source
+      - name: Extract source
+        run: tar -xf source.tar
+
+      - name: Install dependencies
+        run: brew install meson
+      - name: Setup the builddir
+        run: >
+          meson setup build --cross-file nativefiles/release_configuration.ini
+          --cross-file nativefiles/release_configuration_standardlayout.ini
+          --cross-file "crossfiles/macos x86_64.ini"
+          --native-file "nativefiles/macos cpp_std fix.ini"
+          --licensedir license
+          -Dgenerate_sbom_data=true
+      - name: Build
+        run: ninja -C build
+      - name: Install
+        run: |
+          mkdir x86_64
+          meson install -C build --destdir "$PWD/x86_64"
+      - name: Generate SBOM
+        run: >
+          python3 SBOM_scripts/macos.py
+          $(realpath .)
+          x86_64/license/depmf.json
+          "pkg:github/${{ github.repository }}"
+          x86_64/license/nmeum_patches.bin
+          x86_64/license/added_patches.bin
+          "https://github.com/${{ github.repository }}"
+          https://github.com/"${{ github.repository }}"/blob/'${ref}/${path}'
+          false
+          x86_64
+          ${{ needs.container-info.outputs.MACOS_VER }}
+          $GH_RELEASE_VER
+          build
+          > x86_64/SBOM.json
+      - name: Delete licensedir
+        run: rm -r x86_64/license
+      - name: Archive the artifacts
+        run: tar -cf x86_64.tar x86_64
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-build-x86_64
+          path: x86_64.tar
+          if-no-files-found: error
+          retention-days: 1
+
+  macos-build-aarch64:
+    runs-on: ${{ needs.container-info.outputs.MACOS_VER }}
+    name: Build android-tools on macOS (arm64)
+    needs: [container-info, setup-source-repo]
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: source
+      - name: Extract source
+        run: tar -xf source.tar
+
+      - name: Install dependencies
+        run: brew install meson
+      - name: Setup the builddir
+        run: >
+          meson setup build --native-file nativefiles/release_configuration.ini
+          --native-file nativefiles/release_configuration_standardlayout.ini
+          --native-file "nativefiles/macos arm64.ini"
+          --licensedir license
+          -Dgenerate_sbom_data=true
+      - name: Build
+        run: ninja -C build
+      - name: Install
+        run: |
+          mkdir aarch64
+          meson install -C build --destdir "$PWD/aarch64"
+      - name: Generate SBOM
+        run: >
+          python3 SBOM_scripts/macos.py
+          $(realpath .)
+          aarch64/license/depmf.json
+          "pkg:github/${{ github.repository }}"
+          aarch64/license/nmeum_patches.bin
+          aarch64/license/added_patches.bin
+          "https://github.com/${{ github.repository }}"
+          https://github.com/"${{ github.repository }}"/blob/'${ref}/${path}'
+          false
+          aarch64
+          ${{ needs.container-info.outputs.MACOS_VER }}
+          $GH_RELEASE_VER
+          build
+          > aarch64/SBOM.json
+      - name: Delete licensedir
+        run: rm -r aarch64/license
+      - name: Archive the artifacts
+        run: tar -cf aarch64.tar aarch64
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: osx-build-arm64
+          path: aarch64.tar
+          if-no-files-found: error
+          retention-days: 1
+
+  macos-build:
+    runs-on: ${{ needs.container-info.outputs.MACOS_VER }}
+    name: Build android-tools on macOS
+    needs: [container-info, macos-build-x86_64, macos-build-aarch64]
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: macos-build-x86_64
+      - uses: actions/download-artifact@v4
+        with:
+          name: osx-build-arm64
+      - name: Extract built executables
+        run: |
+          tar -xf x86_64.tar
+          tar -xf aarch64.tar
+
+      # https://developer.apple.com/documentation/apple-silicon/building-a-universal-macos-binary#Update-the-Architecture-List-of-Custom-Makefiles
+      - name: Create universal executables
+        shell: zsh {0}
+        run: |
+          mkdir android-tools-static
+          for exec in x86_64/*(*); do
+            basename="$(basename "$exec")"
+            lipo -create -output "android-tools-static/$basename" "$exec" "aarch64/$basename"
+          done
+      - name: Copy data over
+        run: |
+          cp x86_64/SBOM.json android-tools-static/x86_64-SBOM.json
+          cp aarch64/SBOM.json android-tools-static/aarch64-SBOM.json
+          cp -r x86_64/bash-completion android-tools-static/
+
+      - name: Tar up the artifacts
+        run: tar -cf android-tools-static-macos-universal2.tar android-tools-static
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: osx-build
+          path: android-tools-static-macos-universal2.tar
+          if-no-files-found: error
+          retention-days: 1
+
+  process-archives:
+    runs-on: ${{ needs.container-info.outputs.LINUX_VER }}
+    name: Process all built archives
+    needs: [container-info, setup-source-repo, win-build, linux-build, linux-build-cross, macos-build]
+
+    steps:
+      - uses: actions/download-artifact@v4
+      - name: Extract and process all raw archives
+        env:
+          PROJECT_VERSION: ${{ needs.container-info.outputs.PROJECT_VERSION }}
+        run: |
+          set -eu
+          tar --strip-components=3 -xf source/source.tar ./.github/scripts/process_release_archives.sh
+          ./process_release_archives.sh
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifacts
+          path: release-artifacts
+          retention-days: 1
+          if-no-files-found: error
+          # Uploaded files are either compressed already or they are too small
+          # for compression to make sense.
+          compression-level: 0
+
+  release:
+    runs-on: ${{ needs.container-info.outputs.LINUX_VER }}
+    name: Publish release
+    needs: [container-info, process-archives]
+
+    environment: review-block
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-artifacts
+          path: release-artifacts
+      - name: Check whether the release is latest
+        id: is_latest
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          if echo "$TAG_NAME" | grep -Eq -- '-rc\.[0-9]+$'; then
+            echo PRERELEASE=true >> "$GITHUB_OUTPUT"
+          else
+            echo PRERELEASE=false >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub Release
+        # The hash below **must** be kept up-to-date with the hash specified in GH_RELEASE_VER
+        # at the top of this file
+        # v2.3.2
+        uses: softprops/action-gh-release@72f2c25fcb47643c292f7107632f7a47c1df5cd8
+        with:
+          # body_path: MESSAGE
+          # draft: true
+          prerelease: ${{ steps.is_latest.outputs.PRERELEASE }}
+          files: release-artifacts/*
+          fail_on_unmatched_files: true

@@ -1,0 +1,18 @@
+# This cross file is currently unused.
+[binaries]
+c   = '/opt/bin/aarch64-w64-mingw32-gcc'
+cpp = '/opt/bin/aarch64-w64-mingw32-g++'
+ar  = '/opt/bin/aarch64-w64-mingw32-gcc-ar'
+
+[properties]
+needs_exe_wrapper = true
+
+[host_machine]
+system = 'windows'
+subsystem = 'windows'
+kernel = 'nt'
+cpu_family = 'aarch64'
+# The 'cpu' value may not be accurate, but that shouldn't
+# be important.
+cpu = 'aarch64'
+endian = 'little'

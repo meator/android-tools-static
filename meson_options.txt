@@ -31,3 +31,10 @@ option(
   description: 'Generate manpages (currently for adb only, more might be ' +
     'added in the future). Requires pandoc executable.'
 )
+option(
+  'generate_sbom_data',
+  type: 'boolean',
+  value: false,
+  description: 'Generate patch lists used for SBOM generation. This should ' +
+    'only be enabled in an appropriately configured GitHub Actions runner.'
+)
