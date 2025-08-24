@@ -81,3 +81,40 @@ subdir('meson')
 version_header_inc = include_directories('meson')
 
 subdir('vendor')
+
+# TODO
+if true
+  nmeum_patches = []
+  foreach dirname, patchlist: nmeum_submodule_patches
+    foreach patch: patchlist
+      nmeum_patches += dirname / patch
+    endforeach
+  endforeach
+
+  added_patches = []
+  foreach dirname, patchlist: added_submodule_patches
+    foreach patch: patchlist
+      added_patches += dirname / patch
+    endforeach
+  endforeach
+
+  configure_file(
+    command: [
+      'SBOM_scripts/save_args.py',
+      '@OUTPUT@',
+      nmeum_patches
+    ],
+    install_dir: get_option('licensedir'),
+    output: 'nmeum_patches.bin',
+  )
+
+  configure_file(
+    command: [
+      'SBOM_scripts/save_args.py',
+      '@OUTPUT@',
+      added_patches
+    ],
+    install_dir: get_option('licensedir'),
+    output: 'added_patches.bin',
+  )
+endif
