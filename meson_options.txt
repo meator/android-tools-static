@@ -1,0 +1,4 @@
+option('use_bundled_libusb', type: 'boolean', value: false, description: 'Use bundled Google libusb. A wrap is used if set to false.')
+option('libusb_enable_udev', type: 'feature', description: 'Enable udev for device enumeration and hotplug support (recommended); only relevant on Linux, other OSes ignore this option')
+option('generate_manpages', type: 'feature', description: 'Generate manpages (currently for adb only, more might be added in the future). Requires pandoc executable.')
+

@@ -1,0 +1,31 @@
+From c785c9a1b815ae944e0f3a6521602d0d25e263a2 Mon Sep 17 00:00:00 2001
+From: meator <meator.dev@gmail.com>
+Date: Wed, 9 Jul 2025 16:17:31 +0200
+Subject: [PATCH] Add support for Meson Wrap libusb include
+
+---
+ client/usb_libusb.cpp | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/client/usb_libusb.cpp b/client/usb_libusb.cpp
+index f533b55..da3ce1e 100644
+--- a/client/usb_libusb.cpp
++++ b/client/usb_libusb.cpp
+@@ -36,7 +36,13 @@
+ #include <unordered_map>
+ #include <vector>
+ 
+-#ifdef ANDROID_TOOLS_USE_BUNDLED_LIBUSB
++#if defined(ANDROID_TOOLS_USE_BUNDLED_LIBUSB) && defined(ANDROID_TOOLS_USE_WRAP_LIBUSB)
++#error "Your build system is misconfigured! Cannot enable both bundled and wrap libusb!"
++#endif
++
++#ifdef ANDROID_TOOLS_USE_WRAP_LIBUSB
++#include <libusb.h>
++#elif defined(ANDROID_TOOLS_USE_BUNDLED_LIBUSB)
+ #include <libusb/libusb.h>
+ #else
+ #include <libusb-1.0/libusb.h>
+-- 
+2.50.0
+

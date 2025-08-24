@@ -1,0 +1,113 @@
+This patch doesn't work standalone! It relies on a patch made to
+abseil-cpp which provides _native counterparts to libraries provided
+by Abseil.
+
+This patch is a hack around https://github.com/mesonbuild/meson/issues/11121 .
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -32,6 +32,36 @@
+     'cpp',
+     native: true,
+   )
++
++  absl_deps = []
++
++  foreach absl_dep: ['absl_base', 'absl_cord', 'absl_die_if_null', 'absl_hash', 'absl_log',
++                      'absl_log_internal_check_op', 'absl_log_internal_message',
++                      'absl_numeric', 'absl_raw_hash_set', 'absl_status', 'absl_statusor',
++                      'absl_str_format', 'absl_strings', 'absl_synchronization',
++                      'absl_string_view']
++    host_dep = dependency(absl_dep, native: true, default_options: ['cpp_std=c++17'])
++    if host_dep.type_name() == 'internal'
++      # We got the absl dep from a subproject.
++      if dependency(absl_dep, default_options: ['cpp_std=c++17']).type_name() == 'internal'
++        # The non-native version is also from a subproject.
++        # Meson enters a subproject only once even when different native
++        # configurations are requested (see https://github.com/mesonbuild/meson/issues/11121).
++        # This means that the first dependency call made to retrieve
++        # a host machine version of absl (absl is requested above and in
++        # the parent meson.build) will succeed, but further calls to retrieve
++        # a build machine version of absl will return the host version (!).
++        # The following line relies on logic patched into absl wrap
++        # which provides build machine libraries during cross compilation.
++        absl_deps += dependency(absl_dep + '_native')
++      else
++        # This scenario is not tested well.
++        absl_deps += host_dep
++      endif
++    else
++      absl_deps += host_dep
++    endif
++  endforeach
+   protoc_native = executable(
+     'protoc-native',
+     sources: [
+@@ -48,67 +78,7 @@
+       include_directories('../third_party/utf8_range'),
+     ],
+     dependencies: [
+-      dependency(
+-        'absl_base',
+-        native: true,
+-        default_options: ['cpp_std=c++17'],
+-      ),
+-      dependency(
+-        'absl_cord',
+-        native: true,
+-      ),
+-      dependency(
+-        'absl_die_if_null',
+-        native: true,
+-      ),
+-      dependency(
+-        'absl_hash',
+-        native: true,
+-      ),
+-      dependency(
+-        'absl_log',
+-        native: true,
+-      ),
+-      dependency(
+-        'absl_log_internal_check_op',
+-        native: true,
+-      ),
+-      dependency(
+-        'absl_log_internal_message',
+-        native: true,
+-      ),
+-      dependency(
+-        'absl_numeric',
+-        native: true,
+-      ),
+-      dependency(
+-        'absl_raw_hash_set',
+-        native: true,
+-      ),
+-      dependency(
+-        'absl_status',
+-        native: true,
+-      ),
+-      dependency(
+-        'absl_statusor',
+-        native: true,
+-      ),
+-      dependency(
+-        'absl_str_format',
+-        native: true,
+-      ),
+-      dependency(
+-        'absl_strings',
+-        native: true,
+-      ),
+-      dependency(
+-        'absl_synchronization',
+-        native: true,
+-      ),
+-      dependency(
+-        'absl_string_view',
+-        native: true,
+-      ),
++      absl_deps,
+       dependency(
+         'threads',
+         native: true,

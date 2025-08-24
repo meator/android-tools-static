@@ -1,0 +1,37 @@
+Do not install include files and library itself when it's an
+internal static library.
+--- a/build/meson/lib/meson.build
++++ b/build/meson/lib/meson.build
+@@ -121,7 +121,6 @@
+   c_args: libzstd_c_args,
+   gnu_symbol_visibility: 'hidden',
+   dependencies: libzstd_deps,
+-  install: true,
+   version: zstd_libversion)
+ 
+ libzstd_dep = declare_dependency(link_with: libzstd,
+@@ -158,14 +157,3 @@
+       include_directories: libzstd_includes)
+   endif
+ endif
+-
+-pkgconfig.generate(libzstd,
+-  name: 'libzstd',
+-  filebase: 'libzstd',
+-  description: 'fast lossless compression algorithm library',
+-  version: zstd_libversion,
+-  url: 'https://facebook.github.io/zstd/')
+-
+-install_headers(join_paths(zstd_rootdir, 'lib/zstd.h'),
+-  join_paths(zstd_rootdir, 'lib/zdict.h'),
+-  join_paths(zstd_rootdir, 'lib/zstd_errors.h'))
+--- a/meson.build
++++ b/meson.build
+@@ -29,7 +29,6 @@
+ 
+ cc = meson.get_compiler('c')
+ cxx = meson.get_compiler('cpp')
+-pkgconfig = import('pkgconfig')
+ windows_mod = import('windows')
+ 
+ host_machine_os = host_machine.system()

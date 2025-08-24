@@ -1,0 +1,28 @@
+Do not install include files and library itself when it's an
+internal static library.
+--- a/meson.build
++++ b/meson.build
+@@ -76,7 +76,6 @@
+   c_args: compile_args,
+   link_args: link_args,
+   vs_module_defs: 'win32/zlib.def',
+-  install: true,
+   version: meson.project_version(),
+ )
+ 
+@@ -87,15 +86,4 @@
+   include_directories: depinc,
+ )
+ 
+-install_headers(headers)
+-
+-pkg = import('pkgconfig')
+-
+-pkg.generate(
+-  zlib,
+-  name: 'zlib',
+-  description: 'zlib compression library',
+-  extra_cflags: solo_args,
+-)
+-
+ subdir('test')

@@ -1,0 +1,27 @@
+From 0138740733a5c505088a50910697c1df0deec8ea Mon Sep 17 00:00:00 2001
+From: meator <meator.dev@gmail.com>
+Date: Tue, 22 Jul 2025 14:31:02 +0200
+Subject: [PATCH] add ppc64le support
+
+Inspired by
+https://github.com/chimera-linux/cports/blob/c2e94844e16bf3b588d8eab18b8ffd6002062c71/user/android-tools/patches/ppc.patch
+---
+ include/openssl/target.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/openssl/target.h b/include/openssl/target.h
+index bc944d2b..f51a9619 100644
+--- a/include/openssl/target.h
++++ b/include/openssl/target.h
+@@ -57,6 +57,8 @@
+ #define OPENSSL_32_BIT
+ #elif defined(__myriad2__)
+ #define OPENSSL_32_BIT
++#elif defined(__powerpc64__)
++#define OPENSSL_64_BIT
+ #else
+ // The list above enumerates the platforms that BoringSSL supports. For these
+ // platforms we keep a reasonable bar of not breaking them: automated test
+-- 
+2.50.1
+

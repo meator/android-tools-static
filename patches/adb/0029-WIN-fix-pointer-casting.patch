@@ -1,0 +1,46 @@
+From 07399794aa9d3accf550acbb20b2addcfb70ae20 Mon Sep 17 00:00:00 2001
+From: meator <meator.dev@gmail.com>
+Date: Thu, 21 Aug 2025 16:28:35 +0200
+Subject: [PATCH] WIN: Fix pointer casting
+
+We don't know for sure what the type of the second argument of wstat is,
+so let's use a template metaprogramming solution which will find the
+right type irrespective of the wstat implementation used.
+
+The original code doesn't compile with newer C++ compilers because
+struct adb_stat* can't be implicitly casted to struct __stat64 * or
+whatever the type of the second argument is.
+---
+ sysdeps/win32/stat.cpp | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/sysdeps/win32/stat.cpp b/sysdeps/win32/stat.cpp
+index 844c1ce..11b8c53 100644
+--- a/sysdeps/win32/stat.cpp
++++ b/sysdeps/win32/stat.cpp
+@@ -25,6 +25,13 @@
+ 
+ #include <android-base/utf8.h>
+ 
++template <class F> struct WStatArgType;
++
++template <class T>
++struct WStatArgType<int(*)(const wchar_t *, T *)> {
++    using type = T *;
++};
++
+ // Version of stat() that takes a UTF-8 path.
+ int adb_stat(const char* path, struct adb_stat* s) {
+ // This definition of wstat seems to be missing from <sys/stat.h>.
+@@ -53,7 +60,7 @@ int adb_stat(const char* path, struct adb_stat* s) {
+     }
+ 
+     struct adb_stat st;
+-    int result = wstat(path_wide.c_str(), &st);
++    int result = wstat(path_wide.c_str(), reinterpret_cast<WStatArgType<decltype(&wstat)>::type>(&st));
+     if (result == 0 && expected_directory) {
+         if (!S_ISDIR(st.st_mode)) {
+             errno = ENOTDIR;
+-- 
+2.50.1
+

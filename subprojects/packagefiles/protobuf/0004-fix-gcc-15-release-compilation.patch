@@ -1,0 +1,22 @@
+See https://github.com/protocolbuffers/protobuf/issues/21333
+
+This fixes protobuf compilation on MSYS2 in release mode.
+
+diff --git a/src/google/protobuf/port_def.inc b/src/google/protobuf/port_def.inc
+index 1a52d3501..76a19bf4c 100644
+--- a/src/google/protobuf/port_def.inc
++++ b/src/google/protobuf/port_def.inc
+@@ -297,7 +297,12 @@ static_assert(PROTOBUF_ABSL_MIN(20230125, 3),
+ #ifdef PROTOBUF_TAILCALL
+ #error PROTOBUF_TAILCALL was previously defined
+ #endif
+-#if ABSL_HAVE_CPP_ATTRIBUTE(clang::musttail) && !defined(__arm__) &&  \
++
++// See https://github.com/protocolbuffers/protobuf/issues/21333
++#if defined(__GNUC__) && __GNUC__ >= 15
++  #define PROTOBUF_MUSTTAIL
++  #define PROTOBUF_TAILCALL false
++#elif ABSL_HAVE_CPP_ATTRIBUTE(clang::musttail) && !defined(__arm__) &&  \
+     !defined(_ARCH_PPC) && !defined(__wasm__) &&                      \
+     !(defined(_MSC_VER) && defined(_M_IX86)) && !defined(__i386__)
+ // Compilation fails on ARM32: b/195943306

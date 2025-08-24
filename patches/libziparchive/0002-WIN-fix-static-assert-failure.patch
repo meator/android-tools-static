@@ -1,0 +1,30 @@
+From 8a8bcd308076911ae4855d717bdac2cd3bbbb470 Mon Sep 17 00:00:00 2001
+From: meator <meator.dev@gmail.com>
+Date: Sun, 6 Jul 2025 19:13:35 +0200
+Subject: [PATCH] WIN: fix static assert failure
+
+The assert in the bottom context lines of this change will fail on
+Windows platforms without this change.
+
+Source:
+https://github.com/msys2/MINGW-packages/blob/f5cb95312db6cc902cd503eaf0c135c95f31d5e6/mingw-w64-android-tools/0002-android-tools-vendor.patch
+---
+ zip_cd_entry_map.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/zip_cd_entry_map.h b/zip_cd_entry_map.h
+index 838acad..425775f 100644
+--- a/zip_cd_entry_map.h
++++ b/zip_cd_entry_map.h
+@@ -90,7 +90,7 @@ struct ZipStringOffset20 {
+   static constexpr size_t offset_max = (1u << 20) - 1;
+   static constexpr size_t length_max = (1u << 12) - 1;
+   uint32_t name_offset : 20;
+-  uint16_t name_length : 12;
++  uint32_t name_length : 12;
+ };
+ 
+ static_assert(sizeof(struct ZipStringOffset20) == 4);
+-- 
+2.50.0
+
