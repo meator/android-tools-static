@@ -1,0 +1,31 @@
+From 0d31b973954191e188732182617a0fca72cf7a2a Mon Sep 17 00:00:00 2001
+From: meator <meator.dev@gmail.com>
+Date: Tue, 26 Aug 2025 21:45:59 +0200
+Subject: [PATCH] Add support for Meson Wrap libusb include
+
+This is a modification of
+0005-Include-libusb-1.0-libusb.h-instead-of-libusb-libusb.patch made by
+android-tools-static.
+---
+ client/usb_libusb.cpp | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/client/usb_libusb.cpp b/client/usb_libusb.cpp
+index f533b55..6edd3ce 100644
+--- a/client/usb_libusb.cpp
++++ b/client/usb_libusb.cpp
+@@ -39,7 +39,10 @@
+ #ifdef ANDROID_TOOLS_USE_BUNDLED_LIBUSB
+ #include <libusb/libusb.h>
+ #else
+-#include <libusb-1.0/libusb.h>
++// nmeum/android-tools includes libusb-1.0/libusb.h instead. I don't know why.
++// libusb's pkg-config file adds libusb-1.0 to include directories, so let's
++// include the header directly
++#include <libusb.h>
+ #endif
+ 
+ #include <android-base/file.h>
+-- 
+2.51.0
+

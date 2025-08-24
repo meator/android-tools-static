@@ -1,0 +1,43 @@
+There is no reason to have both host machine and build machine protoc
+lying around.
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -13,18 +13,6 @@
+ absl_log_initialize_dep = dependency('absl_log_initialize')
+ 
+ protoc_src = ['google/protobuf/compiler/main.cc']
+-protoc = executable(
+-  'protoc',
+-  sources: protoc_src,
+-  include_directories: incdir,
+-  dependencies: [
+-    dependency('threads'),
+-    absl_log_initialize_dep,
+-    proto_includes_link_dep,
+-    protoc_dep,
+-  ],
+-  install: should_install,
+-)
+ 
+ if meson.is_cross_build()
+   # one huge monolithyc blow, will be splitten up eventually for native grpc plug-ins
+@@ -91,7 +79,18 @@
+     ],
+   )
+ else
+-  protoc_native = protoc
++  protoc_native = executable(
++    'protoc',
++    sources: protoc_src,
++    include_directories: incdir,
++    dependencies: [
++      dependency('threads'),
++      absl_log_initialize_dep,
++      proto_includes_link_dep,
++      protoc_dep,
++    ],
++    install: should_install,
++  )
+ endif
+ 
+ meson.override_find_program('protoc', protoc_native)

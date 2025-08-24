@@ -1,0 +1,9 @@
+[wrap-file]
+directory = boringssl-9cffd74fdb65c69506a0ce1b19420a67ad0cb19e
+
+source_url = https://github.com/google/boringssl/archive/9cffd74fdb65c69506a0ce1b19420a67ad0cb19e.tar.gz
+source_filename = 9cffd74fdb65c69506a0ce1b19420a67ad0cb19e.tar.gz
+source_hash = 16d0bb2886de40870742d5f46e5762ab328fbc7cff977bf2dbf7c5081da8d7f4
+method = cmake
+
+diff_files = boringssl/0001-boringssl-Add support for loongarch.patch, boringssl/0001-boringssl-Workaround-compiler-error-with-gcc-14-and-.patch, boringssl/0012-CMakeLists.txt-Disable-Werror-by-default.patch, boringssl/0013-noinstall.patch, boringssl/0014-add-ppc64le-support.patch, boringssl/0015-WIN-fix-compilation.patch

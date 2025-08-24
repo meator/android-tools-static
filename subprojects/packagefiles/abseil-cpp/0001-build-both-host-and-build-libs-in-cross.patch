@@ -1,0 +1,353 @@
+--- a/meson.build
++++ b/meson.build
+@@ -640,59 +640,77 @@
+   'absl/types/variant.h',
+ )
+ 
++native_builds = [false]
++
++if meson.is_cross_build()
++  native_builds += true
++endif
++
++link_native_to_default = not meson.is_cross_build()
++
+ # Libraries
++foreach build_native: native_builds
++native_suff = build_native ? '_native' : ''
+ absl_base_lib = static_library(
+-  'absl_base',
++  'absl_base' + native_suff,
+   absl_base_sources,
++  native: build_native,
+   include_directories: absl_include_dir,
+   cpp_args: arch_flags,
+   dependencies: [dependency('threads'), libatomic],
+ )
+ 
+ absl_hash_lib = static_library(
+-  'absl_hash',
++  'absl_hash' + native_suff,
+   absl_hash_sources,
++  native: build_native,
+   include_directories: absl_include_dir,
+ )
+ 
+ absl_numeric_lib = static_library(
+-  'absl_numeric',
++  'absl_numeric' + native_suff,
+   absl_numeric_sources,
++  native: build_native,
+   include_directories: absl_include_dir,
+ )
+ 
+ absl_profiling_lib = static_library(
+-  'absl_profiling',
++  'absl_profiling' + native_suff,
+   absl_profiling_sources,
++  native: build_native,
+   include_directories: absl_include_dir,
+ )
+ 
+ absl_crc_lib = static_library(
+-  'absl_crc',
++  'absl_crc' + native_suff,
+   absl_crc_sources,
++  native: build_native,
+   include_directories: absl_include_dir,
+   link_with: [absl_base_lib],
+   dependencies: libatomic,
+ )
+ 
+ absl_strings_lib = static_library(
+-  'absl_strings',
++  'absl_strings' + native_suff,
+   absl_strings_sources,
++  native: build_native,
+   include_directories: absl_include_dir,
+   link_with: [absl_base_lib, absl_crc_lib, absl_numeric_lib, absl_profiling_lib],
+ )
+ 
+ absl_debugging_lib = static_library(
+-  'absl_debugging',
++  'absl_debugging' + native_suff,
+   absl_debugging_sources,
++  native: build_native,
+   include_directories: absl_include_dir,
+   link_with: [absl_base_lib, absl_strings_lib],
+   dependencies: libatomic,
+ )
+ 
+ absl_random_lib = static_library(
+-  'absl_random',
++  'absl_random' + native_suff,
+   absl_random_sources,
++  native: build_native,
+   include_directories: absl_include_dir,
+   cpp_args: hw_flags,
+   link_with: [absl_base_lib, absl_strings_lib],
+@@ -700,8 +718,9 @@
+ )
+ 
+ absl_time_lib = static_library(
+-  'absl_time',
++  'absl_time' + native_suff,
+   absl_time_sources,
++  native: build_native,
+   include_directories: absl_include_dir,
+   link_with: [absl_base_lib, absl_numeric_lib, absl_strings_lib],
+   # macOS only, upstream: https://github.com/abseil/abseil-cpp/pull/280
+@@ -713,22 +732,25 @@
+ )
+ 
+ absl_types_lib = static_library(
+-  'absl_types',
++  'absl_types' + native_suff,
+   absl_types_sources,
++  native: build_native,
+   include_directories: absl_include_dir,
+ )
+ 
+ absl_synchronization_lib = static_library(
+-  'absl_synchronization',
++  'absl_synchronization' + native_suff,
+   absl_synchronization_sources,
++  native: build_native,
+   cpp_args: unscaled_cycleclock_flag,
+   include_directories: absl_include_dir,
+   link_with: [absl_base_lib, absl_debugging_lib, absl_time_lib],
+ )
+ 
+ absl_container_lib = static_library(
+-  'absl_container',
++  'absl_container' + native_suff,
+   absl_container_sources,
++  native: build_native,
+   include_directories: absl_include_dir,
+   link_with: [
+     absl_base_lib,
+@@ -740,8 +762,9 @@
+ )
+ 
+ absl_flags_lib = static_library(
+-  'absl_flags',
++  'absl_flags' + native_suff,
+   absl_flags_sources,
++  native: build_native,
+   include_directories: absl_include_dir,
+   link_with: [
+     absl_base_lib,
+@@ -754,15 +777,17 @@
+ )
+ 
+ absl_status_lib = static_library(
+-  'absl_status',
++  'absl_status' + native_suff,
+   absl_status_sources,
++  native: build_native,
+   include_directories: absl_include_dir,
+   link_with: [absl_base_lib, absl_strings_lib],
+ )
+ 
+ absl_log_lib = static_library(
+-  'absl_log',
++  'absl_log' + native_suff,
+   absl_log_sources,
++  native: build_native,
+   cpp_args: unscaled_cycleclock_flag,
+   include_directories: absl_include_dir,
+   link_with: [absl_base_lib, absl_strings_lib, absl_flags_lib],
+@@ -770,99 +795,145 @@
+ )
+ 
+ # Dependencies
+-absl_base_dep = declare_dependency(
++set_variable(f'absl_base@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_base_lib,
+-)
++))
++if link_native_to_default
++  absl_base_native_dep = absl_base_dep
++endif
+ 
+-absl_hash_dep = declare_dependency(
++set_variable(f'absl_hash@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_hash_lib,
+-)
++))
++if link_native_to_default
++  absl_hash_native_dep = absl_hash_dep
++endif
+ 
+-absl_numeric_dep = declare_dependency(
++set_variable(f'absl_numeric@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_numeric_lib,
+-)
++))
++if link_native_to_default
++  absl_numeric_native_dep = absl_numeric_dep
++endif
+ 
+-absl_profiling_dep = declare_dependency(
++set_variable(f'absl_profiling@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_profiling_lib,
+-)
++))
++if link_native_to_default
++  absl_profiling_native_dep = absl_profiling_dep
++endif
+ 
+-absl_strings_dep = declare_dependency(
++set_variable(f'absl_strings@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_strings_lib,
+-  dependencies: [absl_base_dep, absl_numeric_dep],
+-)
++  dependencies: [get_variable(f'absl_base@native_suff@_dep'), get_variable(f'absl_numeric@native_suff@_dep')],
++))
++if link_native_to_default
++  absl_strings_native_dep = absl_strings_dep
++endif
+ 
+-absl_debugging_dep = declare_dependency(
++set_variable(f'absl_debugging@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_debugging_lib,
+-  dependencies: [absl_base_dep, absl_strings_dep],
+-)
++  dependencies: [get_variable(f'absl_base@native_suff@_dep'), get_variable(f'absl_strings@native_suff@_dep')],
++))
++if link_native_to_default
++  absl_debugging_native_dep = absl_debugging_dep
++endif
+ 
+-absl_random_dep = declare_dependency(
++set_variable(f'absl_random@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_random_lib,
+-  dependencies: [absl_base_dep, absl_strings_dep],
+-)
++  dependencies: [get_variable(f'absl_base@native_suff@_dep'), get_variable(f'absl_strings@native_suff@_dep')],
++))
++if link_native_to_default
++  absl_random_native_dep = absl_random_dep
++endif
+ 
+-absl_crc_dep = declare_dependency(
++set_variable(f'absl_crc@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_crc_lib,
+-  dependencies: [absl_base_dep],
+-)
++  dependencies: [get_variable(f'absl_base@native_suff@_dep')],
++))
++if link_native_to_default
++  absl_crc_native_dep = absl_crc_dep
++endif
+ 
+-absl_time_dep = declare_dependency(
++set_variable(f'absl_time@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_time_lib,
+-  dependencies: [absl_base_dep, absl_numeric_dep, absl_strings_dep],
+-)
++  dependencies: [get_variable(f'absl_base@native_suff@_dep'), get_variable(f'absl_numeric@native_suff@_dep'), get_variable(f'absl_strings@native_suff@_dep')],
++))
++if link_native_to_default
++  absl_time_native_dep = absl_time_dep
++endif
+ 
+-absl_types_dep = declare_dependency(
++set_variable(f'absl_types@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_types_lib,
+-)
++))
++if link_native_to_default
++  absl_types_native_dep = absl_types_dep
++endif
+ 
+-absl_synchronization_dep = declare_dependency(
++set_variable(f'absl_synchronization@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_synchronization_lib,
+-  dependencies: [absl_base_dep, absl_debugging_dep, absl_time_dep],
+-)
++  dependencies: [get_variable(f'absl_base@native_suff@_dep'), get_variable(f'absl_debugging@native_suff@_dep'), get_variable(f'absl_time@native_suff@_dep')],
++))
++if link_native_to_default
++  absl_synchronization_native_dep = absl_synchronization_dep
++endif
+ 
+-absl_container_dep = declare_dependency(
++set_variable(f'absl_container@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_container_lib,
+   dependencies: [
+-    absl_base_dep,
+-    absl_debugging_dep,
+-    absl_hash_dep,
+-    absl_synchronization_dep,
+-    absl_time_dep,
++    get_variable(f'absl_base@native_suff@_dep'),
++    get_variable(f'absl_debugging@native_suff@_dep'),
++    get_variable(f'absl_hash@native_suff@_dep'),
++    get_variable(f'absl_synchronization@native_suff@_dep'),
++    get_variable(f'absl_time@native_suff@_dep'),
+   ],
+-)
++))
++if link_native_to_default
++  absl_container_native_dep = absl_container_dep
++endif
+ 
+-absl_flags_dep = declare_dependency(
++set_variable(f'absl_flags@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_flags_lib,
+   dependencies: [
+-    absl_base_dep,
+-    absl_container_dep,
+-    absl_hash_dep,
+-    absl_strings_dep,
+-    absl_synchronization_dep,
++    get_variable(f'absl_base@native_suff@_dep'),
++    get_variable(f'absl_container@native_suff@_dep'),
++    get_variable(f'absl_hash@native_suff@_dep'),
++    get_variable(f'absl_strings@native_suff@_dep'),
++    get_variable(f'absl_synchronization@native_suff@_dep'),
+   ],
+-)
++))
++if link_native_to_default
++  absl_flags_native_dep = absl_flags_dep
++endif
+ 
+-absl_log_dep = declare_dependency(
++set_variable(f'absl_log@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_log_lib,
+-  dependencies: [absl_base_dep, absl_strings_dep, absl_flags_dep],
+-)
++  dependencies: [get_variable(f'absl_base@native_suff@_dep'), get_variable(f'absl_strings@native_suff@_dep'), get_variable(f'absl_flags@native_suff@_dep')],
++))
++if link_native_to_default
++  absl_log_native_dep = absl_log_dep
++endif
+ 
+-absl_status_dep = declare_dependency(
++set_variable(f'absl_status@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_status_lib,
+-  dependencies: [absl_base_dep, absl_strings_dep],
+-)
++  dependencies: [get_variable(f'absl_base@native_suff@_dep'), get_variable(f'absl_strings@native_suff@_dep')],
++))
++if link_native_to_default
++  absl_status_native_dep = absl_status_dep
++endif
++endforeach

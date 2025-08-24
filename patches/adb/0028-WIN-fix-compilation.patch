@@ -1,0 +1,29 @@
+From a83ae058b148ac8a62ea32584c51728617d82b8b Mon Sep 17 00:00:00 2001
+From: meator <meator.dev@gmail.com>
+Date: Sun, 6 Jul 2025 14:34:31 +0200
+Subject: [PATCH] WIN: fix compilation
+
+Source:
+https://github.com/msys2/MINGW-packages/blob/b2c2452bcf764dc5c58c3cdf596d24d792c0dff7/mingw-w64-android-tools/0003-fix-building-with-gcc-mingw.patch
+---
+ sysdeps.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/sysdeps.h b/sysdeps.h
+index 99f6b74..7bf5b99 100644
+--- a/sysdeps.h
++++ b/sysdeps.h
+@@ -141,8 +141,10 @@ static inline int unix_read(borrowed_fd fd, void* buf, size_t len) {
+ static inline int unix_write(borrowed_fd fd, const void* buf, size_t len) {
+     return write(fd.get(), buf, len);
+ }
++#ifdef write
+ #undef   write
+ #define  write  ___xxx_write
++#endif
+ 
+ #undef pwrite
+ #define pwrite ___xxx_pwrite
+-- 
+2.50.0
+

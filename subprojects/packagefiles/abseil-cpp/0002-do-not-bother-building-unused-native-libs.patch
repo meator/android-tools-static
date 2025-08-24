@@ -1,0 +1,101 @@
+absl_random and absl_types are unused by protoc (the primary dependant of this
+wrap which needs native libraries), so do not bother double building it.
+--- a/meson.build
++++ b/meson.build
+@@ -707,16 +707,6 @@
+   dependencies: libatomic,
+ )
+ 
+-absl_random_lib = static_library(
+-  'absl_random' + native_suff,
+-  absl_random_sources,
+-  native: build_native,
+-  include_directories: absl_include_dir,
+-  cpp_args: hw_flags,
+-  link_with: [absl_base_lib, absl_strings_lib],
+-  dependencies: libatomic,
+-)
+-
+ absl_time_lib = static_library(
+   'absl_time' + native_suff,
+   absl_time_sources,
+@@ -731,13 +721,6 @@
+   ),
+ )
+ 
+-absl_types_lib = static_library(
+-  'absl_types' + native_suff,
+-  absl_types_sources,
+-  native: build_native,
+-  include_directories: absl_include_dir,
+-)
+-
+ absl_synchronization_lib = static_library(
+   'absl_synchronization' + native_suff,
+   absl_synchronization_sources,
+@@ -845,15 +828,6 @@
+   absl_debugging_native_dep = absl_debugging_dep
+ endif
+ 
+-set_variable(f'absl_random@native_suff@_dep', declare_dependency(
+-  include_directories: absl_include_dir,
+-  link_with: absl_random_lib,
+-  dependencies: [get_variable(f'absl_base@native_suff@_dep'), get_variable(f'absl_strings@native_suff@_dep')],
+-))
+-if link_native_to_default
+-  absl_random_native_dep = absl_random_dep
+-endif
+-
+ set_variable(f'absl_crc@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_crc_lib,
+@@ -872,14 +846,6 @@
+   absl_time_native_dep = absl_time_dep
+ endif
+ 
+-set_variable(f'absl_types@native_suff@_dep', declare_dependency(
+-  include_directories: absl_include_dir,
+-  link_with: absl_types_lib,
+-))
+-if link_native_to_default
+-  absl_types_native_dep = absl_types_dep
+-endif
+-
+ set_variable(f'absl_synchronization@native_suff@_dep', declare_dependency(
+   include_directories: absl_include_dir,
+   link_with: absl_synchronization_lib,
+@@ -936,4 +902,34 @@
+ if link_native_to_default
+   absl_status_native_dep = absl_status_dep
+ endif
++
++# Libraries unused by protoc; It is not necessary to compile
++# these for the host arch.
++if not build_native
++absl_random_lib = static_library(
++  'absl_random',
++  absl_random_sources,
++  include_directories: absl_include_dir,
++  cpp_args: hw_flags,
++  link_with: [absl_base_lib, absl_strings_lib],
++  dependencies: libatomic,
++)
++
++absl_random_dep = declare_dependency(
++  include_directories: absl_include_dir,
++  link_with: absl_random_lib,
++  dependencies: [absl_base_dep, absl_strings_dep],
++)
++
++absl_types_lib = static_library(
++  'absl_types',
++  absl_types_sources,
++  include_directories: absl_include_dir,
++)
++
++absl_types_dep = declare_dependency(
++  include_directories: absl_include_dir,
++  link_with: absl_types_lib,
++)
++endif
+ endforeach

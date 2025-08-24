@@ -1,0 +1,13 @@
+This is used in the GitHub Actions runner. See the commend above this
+change for more info.
+--- a/vendor/meson.build
++++ b/vendor/meson.build
+@@ -132,7 +132,7 @@ endif
+ # Actions runner. It is padded by comments to produce a nice independent patch
+ # with the context lines containing only comments.
+ 
+-#subdir_done()
++subdir_done()
+ 
+ # See above.
+ # See above.

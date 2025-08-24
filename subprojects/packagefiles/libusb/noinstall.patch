@@ -1,0 +1,38 @@
+Do not install include files and library itself when it's an
+internal static library.
+--- a/meson.build
++++ b/meson.build
+@@ -7,7 +7,6 @@
+ )
+ 
+ cc = meson.get_compiler('c')
+-pconf = import('pkgconfig')
+ 
+ thread_dep = dependency('threads')
+ udev_dep = dependency(
+@@ -95,10 +94,6 @@
+ cdata.set('USE_SYSTEM_LOGGING_FACILITY', get_option('system-log'))
+ 
+ incdirs = include_directories('libusb', 'libusb/os')
+-install_headers(
+-  'libusb/libusb.h',
+-  subdir: 'libusb-1.0',
+-)
+ 
+ sources = files(
+   'libusb/core.c',
+@@ -173,14 +168,6 @@
+   name_prefix: '',
+   gnu_symbol_visibility: 'hidden',
+   vs_module_defs: 'libusb/libusb-1.0.def',
+-  install: true,
+-)
+-
+-pconf.generate(
+-  libusb,
+-  name: 'libusb-1.0',
+-  description: 'C API for USB device access from Linux, Mac OS X, Windows, OpenBSD/NetBSD and Solaris userspace',
+-  subdirs: 'libusb-1.0',
+ )
+ 
+ libusb_dep = declare_dependency(

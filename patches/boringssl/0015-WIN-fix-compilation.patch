@@ -1,0 +1,55 @@
+From 7d1e5ba9800293b2473a8579ca866e38e320ef88 Mon Sep 17 00:00:00 2001
+From: meator <meator.dev@gmail.com>
+Date: Sun, 6 Jul 2025 20:57:26 +0200
+Subject: [PATCH] WIN: fix compilation
+
+Source:
+https://github.com/msys2/MINGW-packages/blob/b2c2452bcf764dc5c58c3cdf596d24d792c0dff7/mingw-w64-android-tools/0002-android-tools-vendor.patch
+---
+ include/openssl/target.h   | 5 +++++
+ third_party/fiat/p256_64.h | 4 ++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/include/openssl/target.h b/include/openssl/target.h
+index 2760f52ce..fa68e494c 100644
+--- a/include/openssl/target.h
++++ b/include/openssl/target.h
+@@ -78,8 +78,13 @@
+ #define OPENSSL_APPLE
+ #endif
+ 
++// Unfortunate workaround to avoid symbol conflict with wincrypt.h
++// See https://github.com/openssl/openssl/issues/9981
+ #if defined(_WIN32)
+ #define OPENSSL_WINDOWS
++#undef PKCS7_SIGNER_INFO
++#undef X509_EXTENSIONS
++#undef X509_NAME
+ #endif
+ 
+ // Trusty and Android baremetal aren't Linux but currently define __linux__.
+diff --git a/third_party/fiat/p256_64.h b/third_party/fiat/p256_64.h
+index 6667b31f0..9bdc5118b 100644
+--- a/third_party/fiat/p256_64.h
++++ b/third_party/fiat/p256_64.h
+@@ -172,7 +172,7 @@ static FIAT_P256_FIAT_INLINE void fiat_p256_cmovznz_u64(uint64_t* out1, fiat_p25
+  *
+  */
+ static FIAT_P256_FIAT_INLINE void fiat_p256_mul(fiat_p256_montgomery_domain_field_element out1, const fiat_p256_montgomery_domain_field_element arg1, const fiat_p256_montgomery_domain_field_element arg2) {
+-#if !defined(OPENSSL_NO_ASM) && defined(__GNUC__) && defined(__x86_64__)
++#if !defined(OPENSSL_NO_ASM) && defined(__GNUC__) && defined(__x86_64__) && !defined(OPENSSL_WINDOWS)
+   if (CRYPTO_is_BMI1_capable() && CRYPTO_is_BMI2_capable() &&
+     CRYPTO_is_ADX_capable()) {
+       fiat_p256_adx_mul(out1, arg1, arg2);
+@@ -486,7 +486,7 @@ static FIAT_P256_FIAT_INLINE void fiat_p256_mul(fiat_p256_montgomery_domain_fiel
+  *
+  */
+ static FIAT_P256_FIAT_INLINE void fiat_p256_square(fiat_p256_montgomery_domain_field_element out1, const fiat_p256_montgomery_domain_field_element arg1) {
+-#if !defined(OPENSSL_NO_ASM) && defined(__GNUC__) && defined(__x86_64__)
++#if !defined(OPENSSL_NO_ASM) && defined(__GNUC__) && defined(__x86_64__) && !defined(OPENSSL_WINDOWS)
+   if (CRYPTO_is_BMI1_capable() && CRYPTO_is_BMI2_capable() &&
+     CRYPTO_is_ADX_capable()) {
+       fiat_p256_adx_sqr(out1, arg1);
+-- 
+2.50.0
+
