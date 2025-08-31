@@ -5,13 +5,13 @@ directory = protobuf-25.2
 source_url = https://github.com/protocolbuffers/protobuf/releases/download/v25.2/protobuf-25.2.tar.gz
 source_filename = protobuf-25.2.tar.gz
 source_hash = 8ff511a64fc46ee792d3fe49a5a1bcad6f7dc50dfbba5a28b0e5b979c17f9871
-patch_filename = protobuf_25.2-3_patch.zip
-patch_url = https://wrapdb.mesonbuild.com/v2/protobuf_25.2-3/get_patch
-patch_hash = b0a1f06b32ed30c1bf2ea9971c8ee1e27226ec9e0aa3b455f930cb2ad45e926f
-source_fallback_url = https://github.com/mesonbuild/wrapdb/releases/download/protobuf_25.2-3/protobuf-25.2.tar.gz
-wrapdb_version = 25.2-3
+patch_filename = protobuf_25.2-4_patch.zip
+patch_url = https://wrapdb.mesonbuild.com/v2/protobuf_25.2-4/get_patch
+patch_hash = a247e5c07938883fdfa840f47442bedf815613274c988c628061e4d3c6bb25d5
+source_fallback_url = https://github.com/mesonbuild/wrapdb/releases/download/protobuf_25.2-4/protobuf-25.2.tar.gz
+wrapdb_version = 25.2-4
 
-diff_files = protobuf/0001-fix-host-abseil-compilation.patch, protobuf/0002-do-not-build-nonnative-protoc-during-cross-build.patch, protobuf/0003-fix-windows-symlinks.patch, protobuf/0004-fix-gcc-15-release-compilation.patch
+diff_files = protobuf/0001-fix-host-abseil-compilation.patch, protobuf/0002-do-not-build-nonnative-protoc-during-cross-build.patch, protobuf/0004-fix-gcc-15-release-compilation.patch
 
 [provide]
 protobuf = protobuf_dep
