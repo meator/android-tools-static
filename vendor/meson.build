@@ -34,6 +34,7 @@ nmeum_submodule_patches = {
     '0020-Fix-compilation-with-libusb-1.0.24.patch',
     '0023-Update-usage-of-usbdevfs_urb-to-match-new-kernel-UAP.patch',
     '0026-Drop-compile-static-check.patch',
+    '0027-Make-legacy-USB-driver-default-on-Linux.patch',
   ],
   'core': [
     '0001-Fix-inclusion-of-stdatomic.h-with-g.patch',
@@ -66,9 +67,9 @@ nmeum_submodule_patches = {
 
 added_submodule_patches = {
   'adb': [
-    '0027-Add-support-for-Meson-Wrap-libusb-include.patch',
-    '0028-WIN-fix-compilation.patch',
-    '0029-WIN-fix-pointer-casting.patch',
+    '0028-Add-support-for-Meson-Wrap-libusb-include.patch',
+    '0029-WIN-fix-compilation.patch',
+    '0030-WIN-fix-pointer-casting.patch',
   ],
   'libziparchive': [
     '0002-WIN-fix-static-assert-failure.patch',
