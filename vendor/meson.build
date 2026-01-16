@@ -54,9 +54,11 @@ nmeum_submodule_patches = {
     '0003-logging.h-only-activate-ostream-warnings-when-clang-.patch',
     '0004-Don-t-use-thread-safety-annotations-with-gcc.patch',
     '0006-remove-usage-of-__builtin_available.patch',
+    '0007-Include-missing-cstdint-header.patch',
   ],
   'libziparchive': [
     '0001-remove-glibc-internal-header-cdefs.h.patch',
+    '0002-Include-missing-cstdint-header.patch',
   ],
   'logging': [
     '0001-Don-t-use-the-internal-glibc-header-sys-cdefs.h.patch',
@@ -72,7 +74,7 @@ added_submodule_patches = {
     '0030-WIN-fix-pointer-casting.patch',
   ],
   'libziparchive': [
-    '0002-WIN-fix-static-assert-failure.patch',
+    '0003-WIN-fix-static-assert-failure.patch',
   ],
 }
 
