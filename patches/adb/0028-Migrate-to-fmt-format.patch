@@ -1,4 +1,4 @@
-From b9c8b7ddc67a70a3f0f48fb92976662f630cb600 Mon Sep 17 00:00:00 2001
+From d76cbfbb1a5c5201d279410c15591ddc780de807 Mon Sep 17 00:00:00 2001
 From: LuK1337 <priv.luk@gmail.com>
 Date: Fri, 13 Mar 2026 00:15:41 +0100
 Subject: [PATCH] Migrate to fmt::format()
@@ -18,7 +18,7 @@ Restores support for older toolchains.
  10 files changed, 40 insertions(+), 36 deletions(-)
 
 diff --git a/adb.cpp b/adb.cpp
-index 6321981..438243b 100644
+index 30e668d..f134288 100644
 --- a/adb.cpp
 +++ b/adb.cpp
 @@ -433,7 +433,7 @@ static void handle_new_connection(atransport* t, apacket* p) {
@@ -53,7 +53,7 @@ index a5fd0d5..7e7ceb0 100644
          return {};
      }
 diff --git a/client/discovered_services.h b/client/discovered_services.h
-index be8bffa..36731b9 100644
+index 73fefd4..7bd2413 100644
 --- a/client/discovered_services.h
 +++ b/client/discovered_services.h
 @@ -17,10 +17,10 @@
@@ -77,7 +77,7 @@ index be8bffa..36731b9 100644
  
              if (i < 14) {
                  result += ":";
-@@ -102,7 +102,7 @@ struct ServiceInfo {
+@@ -104,7 +104,7 @@ struct ServiceInfo {
          if (!v4_address.has_value()) {
              return "";
          }
@@ -268,10 +268,10 @@ index fae5f83..1eb7961 100644
      }
      return std::make_pair(offset, tree_size);
 diff --git a/client/transport_mdns.cpp b/client/transport_mdns.cpp
-index e3aa9d7..03e481d 100644
+index 36c3728..930c695 100644
 --- a/client/transport_mdns.cpp
 +++ b/client/transport_mdns.cpp
-@@ -53,8 +53,8 @@ static void RequestConnectToDevice(const ServiceInfo& info) {
+@@ -55,8 +55,8 @@ static void RequestConnectToDevice(const ServiceInfo& info) {
      std::thread([=] {
          VLOG(MDNS) << "Attempting to secure connect to instance '" << info << "'";
          std::string response;
@@ -282,7 +282,7 @@ index e3aa9d7..03e481d 100644
                                    info.service, info.v4_address_string(), info.port, response);
      }).detach();
  }
-@@ -152,7 +152,7 @@ std::string mdns_check() {
+@@ -162,7 +162,7 @@ std::string mdns_check() {
  std::string mdns_list_discovered_services() {
      std::string result;
      auto cb = [&](const ServiceInfo& si) {
@@ -291,7 +291,7 @@ index e3aa9d7..03e481d 100644
                                si.port);
      };
      mdns::discovered_services.ForAllServices(cb);
-@@ -169,7 +169,7 @@ std::optional<ServiceInfo> mdns_get_connect_service_info(const std::string& name
+@@ -179,7 +179,7 @@ std::optional<ServiceInfo> mdns_get_connect_service_info(const std::string& name
      }
  
      std::string fq_service =
@@ -386,7 +386,7 @@ index 0e5af48..730150b 100644
  }
  
 diff --git a/transport.cpp b/transport.cpp
-index c5fe0aa..cf8561f 100644
+index 09d7d20..4659717 100644
 --- a/transport.cpp
 +++ b/transport.cpp
 @@ -46,6 +46,7 @@
