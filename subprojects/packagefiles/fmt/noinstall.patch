@@ -2,34 +2,27 @@ Do not install include files and library itself when it's an
 internal static library.
 --- a/meson.build
 +++ b/meson.build
-@@ -22,17 +22,8 @@
-   cpp_args: fmt_private_cpp_args,
-   include_directories: 'include',
-   build_by_default: not header_only,
--  install: not header_only,
- )
- 
--if not header_only
+@@ -29,12 +29,6 @@
+     override_options: 'cpp_std=c++14',
+     include_directories: 'include',
+     build_by_default: true,
+-    install: true,
+-  )
 -  install_subdir(
 -    'include',
 -    strip_directory: true,
 -    install_dir: get_option('includedir'),
--  )
--endif
--
- fmt_dep = declare_dependency(
-   include_directories: 'include',
-   compile_args: fmt_interface_cpp_args,
-@@ -47,12 +38,3 @@
-   include_directories: 'include',
-   compile_args: '-DFMT_HEADER_ONLY',
- )
--
--if not header_only
+   )
+   fmt_dep = declare_dependency(
+     include_directories: 'include',
+@@ -44,10 +38,4 @@
+   if meson.version().version_compare('>=0.54.0')
+     meson.override_dependency('fmt', fmt_dep)
+   endif
 -  pkg_mod = import('pkgconfig')
 -  pkg_mod.generate(
 -    fmt_lib,
 -    name: 'fmt',
 -    filebase: 'fmt',
 -  )
--endif
+ endif

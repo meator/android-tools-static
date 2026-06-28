@@ -1,6 +1,6 @@
 --- a/meson.build
 +++ b/meson.build
-@@ -640,59 +640,77 @@
+@@ -650,10 +650,21 @@
    'absl/types/variant.h',
  )
  
@@ -21,8 +21,9 @@
    absl_base_sources,
 +  native: build_native,
    include_directories: absl_include_dir,
+   override_options: override_cpp,
    cpp_args: arch_flags,
-   dependencies: [dependency('threads'), libatomic],
+@@ -661,29 +672,33 @@
  )
  
  absl_hash_lib = static_library(
@@ -31,6 +32,7 @@
    absl_hash_sources,
 +  native: build_native,
    include_directories: absl_include_dir,
+   override_options: override_cpp,
  )
  
  absl_numeric_lib = static_library(
@@ -39,6 +41,7 @@
    absl_numeric_sources,
 +  native: build_native,
    include_directories: absl_include_dir,
+   override_options: override_cpp,
  )
  
  absl_profiling_lib = static_library(
@@ -47,6 +50,7 @@
    absl_profiling_sources,
 +  native: build_native,
    include_directories: absl_include_dir,
+   override_options: override_cpp,
  )
  
  absl_crc_lib = static_library(
@@ -55,8 +59,9 @@
    absl_crc_sources,
 +  native: build_native,
    include_directories: absl_include_dir,
+   override_options: override_cpp,
    link_with: [absl_base_lib],
-   dependencies: libatomic,
+@@ -691,16 +706,18 @@
  )
  
  absl_strings_lib = static_library(
@@ -65,6 +70,7 @@
    absl_strings_sources,
 +  native: build_native,
    include_directories: absl_include_dir,
+   override_options: override_cpp,
    link_with: [absl_base_lib, absl_crc_lib, absl_numeric_lib, absl_profiling_lib],
  )
  
@@ -74,8 +80,9 @@
    absl_debugging_sources,
 +  native: build_native,
    include_directories: absl_include_dir,
+   override_options: override_cpp,
    link_with: [absl_base_lib, absl_strings_lib],
-   dependencies: libatomic,
+@@ -708,8 +725,9 @@
  )
  
  absl_random_lib = static_library(
@@ -84,9 +91,9 @@
    absl_random_sources,
 +  native: build_native,
    include_directories: absl_include_dir,
+   override_options: override_cpp,
    cpp_args: hw_flags,
-   link_with: [absl_base_lib, absl_strings_lib],
-@@ -700,8 +718,9 @@
+@@ -718,8 +736,9 @@
  )
  
  absl_time_lib = static_library(
@@ -95,17 +102,9 @@
    absl_time_sources,
 +  native: build_native,
    include_directories: absl_include_dir,
+   override_options: override_cpp,
    link_with: [absl_base_lib, absl_numeric_lib, absl_strings_lib],
-   # macOS only, upstream: https://github.com/abseil/abseil-cpp/pull/280
-@@ -713,22 +732,25 @@
- )
- 
- absl_types_lib = static_library(
--  'absl_types',
-+  'absl_types' + native_suff,
-   absl_types_sources,
-+  native: build_native,
-   include_directories: absl_include_dir,
+@@ -732,8 +751,9 @@
  )
  
  absl_synchronization_lib = static_library(
@@ -115,7 +114,8 @@
 +  native: build_native,
    cpp_args: unscaled_cycleclock_flag,
    include_directories: absl_include_dir,
-   link_with: [absl_base_lib, absl_debugging_lib, absl_time_lib],
+   override_options: override_cpp,
+@@ -741,8 +761,9 @@
  )
  
  absl_container_lib = static_library(
@@ -124,9 +124,9 @@
    absl_container_sources,
 +  native: build_native,
    include_directories: absl_include_dir,
+   override_options: override_cpp,
    link_with: [
-     absl_base_lib,
-@@ -740,8 +762,9 @@
+@@ -755,8 +776,9 @@
  )
  
  absl_flags_lib = static_library(
@@ -135,9 +135,9 @@
    absl_flags_sources,
 +  native: build_native,
    include_directories: absl_include_dir,
+   override_options: override_cpp,
    link_with: [
-     absl_base_lib,
-@@ -754,15 +777,17 @@
+@@ -770,16 +792,18 @@
  )
  
  absl_status_lib = static_library(
@@ -146,6 +146,7 @@
    absl_status_sources,
 +  native: build_native,
    include_directories: absl_include_dir,
+   override_options: override_cpp,
    link_with: [absl_base_lib, absl_strings_lib],
  )
  
@@ -156,8 +157,8 @@
 +  native: build_native,
    cpp_args: unscaled_cycleclock_flag,
    include_directories: absl_include_dir,
-   link_with: [absl_base_lib, absl_strings_lib, absl_flags_lib],
-@@ -770,99 +795,145 @@
+   override_options: override_cpp,
+@@ -788,98 +812,144 @@
  )
  
  # Dependencies
@@ -255,17 +256,18 @@
    link_with: absl_time_lib,
 -  dependencies: [absl_base_dep, absl_numeric_dep, absl_strings_dep],
 -)
+-
+-absl_types_dep = declare_dependency(
+-  include_directories: absl_include_dir,
+-)
 +  dependencies: [get_variable(f'absl_base@native_suff@_dep'), get_variable(f'absl_numeric@native_suff@_dep'), get_variable(f'absl_strings@native_suff@_dep')],
 +))
 +if link_native_to_default
 +  absl_time_native_dep = absl_time_dep
 +endif
- 
--absl_types_dep = declare_dependency(
++
 +set_variable(f'absl_types@native_suff@_dep', declare_dependency(
-   include_directories: absl_include_dir,
-   link_with: absl_types_lib,
--)
++  include_directories: absl_include_dir,
 +))
 +if link_native_to_default
 +  absl_types_native_dep = absl_types_dep
