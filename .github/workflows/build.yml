@@ -55,8 +55,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # gcc is required in clang builds on opensuse; the clang package on its
+          # own cannot compile C++, it is missing vital dependencies (a linker,
+          # some gcc libraries...). gcc-c++ should pull in all of it.
           - os: "opensuse/leap:latest"
-            pkgs: "clang binutils"
+            pkgs: "clang gcc11-c++"
             env1: "CC=clang CXX=clang++"
           - os: "opensuse/tumbleweed"
             pkgs: "gcc gcc-c++"
