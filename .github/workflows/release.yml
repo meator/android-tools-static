@@ -13,7 +13,7 @@ concurrency:
 env:
   # The hash below **must** be kept up-to-date with the hash in uses: at the
   # bottom of this file.
-  GH_RELEASE_VER: 72f2c25fcb47643c292f7107632f7a47c1df5cd8
+  GH_RELEASE_VER: 718ea10b132b3b2eba29c1007bb80653f286566b
 
 jobs:
   container-info:
@@ -25,7 +25,7 @@ jobs:
       MACOS_VER: ${{ steps.info.outputs.MACOS_VER }}
       PROJECT_VERSION: ${{ steps.info.outputs.PROJECT_VERSION }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Set container info
         id: info
         run: |
@@ -43,11 +43,11 @@ jobs:
     steps:
       # - name: Cache source
       #   id: cache
-      #   uses: actions/cache@v4
+      #   uses: actions/cache@v6
       #   with:
       #     path: source.tar
       #     key: source-cache
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         # if: steps.cache.outputs.cache-hit != 'true'
         timeout-minutes: 15
         with:
@@ -67,7 +67,7 @@ jobs:
         # if: steps.cache.outputs.cache-hit != 'true'
         run: tar -cf source.tar -C repo --exclude=subprojects/packagecache .
       - name: Upload result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: source
           path: source.tar
@@ -95,8 +95,8 @@ jobs:
             nasm_pkg: mingw-w64-i686-nasm
 
     steps:
-      # - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      # - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: source
       - name: Extract source
@@ -104,8 +104,8 @@ jobs:
 
       - name: Setup MSYS2
         # The hash below **must** be kept up-to-date with the hash in Generate SBOM.
-        # v2.28.0
-        uses: msys2/setup-msys2@40677d36a502eb2cf0fb808cc9dec31bf6152638
+        # v2.32.0
+        uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884
         with:
           msystem: ${{ matrix.archinfo.msys2_env }}
           install: >
@@ -133,7 +133,7 @@ jobs:
         shell: msys2 {0}
         env:
           # The hash below **must** be kept up-to-date with the hash in uses: above.
-          SETUP_MSYS2_VER: 40677d36a502eb2cf0fb808cc9dec31bf6152638
+          SETUP_MSYS2_VER: 66cd2cce69caa17b53920067426061ca1de3a884
         run: >
           python3 SBOM_scripts/windows.py
           $(realpath .)
@@ -159,7 +159,7 @@ jobs:
         shell: bash
         run: tar -cf android-tools-static-windows-${{ matrix.archinfo.arch }}.tar android-tools-static
       - name: Upload result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: windows-build-${{ matrix.archinfo.arch }}
           path: android-tools-static-windows-${{ matrix.archinfo.arch }}.tar
@@ -172,7 +172,7 @@ jobs:
     needs: [container-info, setup-source-repo]
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: source
       - name: Extract source
@@ -180,8 +180,8 @@ jobs:
 
       - name: Setup latest Alpine Linux
         # The hash below **must** be kept up-to-date with the hash in Generate SBOM.
-        # v1.3.0
-        uses: jirutka/setup-alpine@cf5fddcea495dcc19c0f991c6f6fa6a7abf3d50a
+        # v1.4.1
+        uses: jirutka/setup-alpine@ae3b3ddba35054804fc4a3507b519fa7e8152050
         with:
           branch: v3.22
           packages: git meson gcc g++ cmake patch linux-headers pandoc-cli
@@ -207,7 +207,7 @@ jobs:
         shell: alpine.sh {0}
         env:
           # The hash below **must** be kept up-to-date with the hash in uses: above.
-          SETUP_ALPINE_VER: cf5fddcea495dcc19c0f991c6f6fa6a7abf3d50a
+          SETUP_ALPINE_VER: ae3b3ddba35054804fc4a3507b519fa7e8152050
         run: >
           python3 SBOM_scripts/alpine_native.py
           $(realpath .)
@@ -228,7 +228,7 @@ jobs:
       - name: Archive the artifacts
         run: tar -cf android-tools-static-linux-x86_64.tar android-tools-static
       - name: Upload result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: linux-build-x86_64
           path: android-tools-static-linux-x86_64.tar
@@ -255,7 +255,7 @@ jobs:
     container: ghcr.io/meator/musl-cross-make-alpine-${{ matrix.archinfo.container_suffix }}:latest
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: source
       - name: Extract source
@@ -305,7 +305,7 @@ jobs:
       - name: Archive the artifacts
         run: tar -cf android-tools-static-linux-${{ matrix.archinfo.arch }}.tar android-tools-static
       - name: Upload result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: linux-build-${{ matrix.archinfo.arch }}
           path: android-tools-static-linux-${{ matrix.archinfo.arch }}.tar
@@ -318,7 +318,7 @@ jobs:
     needs: [container-info, setup-source-repo]
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: source
       - name: Extract source
@@ -361,7 +361,7 @@ jobs:
       - name: Archive the artifacts
         run: tar -cf x86_64.tar x86_64
       - name: Upload result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: macos-build-x86_64
           path: x86_64.tar
@@ -374,7 +374,7 @@ jobs:
     needs: [container-info, setup-source-repo]
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: source
       - name: Extract source
@@ -416,7 +416,7 @@ jobs:
       - name: Archive the artifacts
         run: tar -cf aarch64.tar aarch64
       - name: Upload result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: osx-build-arm64
           path: aarch64.tar
@@ -429,10 +429,10 @@ jobs:
     needs: [container-info, macos-build-x86_64, macos-build-aarch64]
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: macos-build-x86_64
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: osx-build-arm64
       - name: Extract built executables
@@ -458,7 +458,7 @@ jobs:
       - name: Tar up the artifacts
         run: tar -cf android-tools-static-macos-universal2.tar android-tools-static
       - name: Upload result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: osx-build
           path: android-tools-static-macos-universal2.tar
@@ -471,7 +471,7 @@ jobs:
     needs: [container-info, setup-source-repo, win-build, linux-build, linux-build-cross, macos-build]
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
       - name: Extract and process all raw archives
         env:
           PROJECT_VERSION: ${{ needs.container-info.outputs.PROJECT_VERSION }}
@@ -480,7 +480,7 @@ jobs:
           tar --strip-components=3 -xf source/source.tar ./.github/scripts/process_release_archives.sh
           ./process_release_archives.sh
       - name: Upload result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-artifacts
           path: release-artifacts
@@ -498,7 +498,7 @@ jobs:
     environment: review-block
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: release-artifacts
           path: release-artifacts
@@ -516,8 +516,8 @@ jobs:
       - name: Create GitHub Release
         # The hash below **must** be kept up-to-date with the hash specified in GH_RELEASE_VER
         # at the top of this file
-        # v2.3.2
-        uses: softprops/action-gh-release@72f2c25fcb47643c292f7107632f7a47c1df5cd8
+        # v3.0.1
+        uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
         with:
           # body_path: MESSAGE
           # draft: true

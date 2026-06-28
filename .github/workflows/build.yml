@@ -9,7 +9,7 @@ jobs:
     steps:
       # - name: Cache source
       #   id: cache
-      #   uses: actions/cache@v4
+      #   uses: actions/cache@v6
       #   with:
       #     path: android-tools-source.tar.xz
       #     key: build-cache
@@ -21,7 +21,7 @@ jobs:
             cmake git meson
       - name: checkout
         # if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         timeout-minutes: 15
         with:
           path: android-tools-source
@@ -43,7 +43,7 @@ jobs:
 
           tar -cf android-tools-source.tar android-tools-source/
       - name: upload package_source
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: package_source
           path: android-tools-source.tar
@@ -127,7 +127,7 @@ jobs:
           dnf install -y ${{ matrix.pkgs }} cmake meson libatomic
 
       - name: download source
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: package_source
 
@@ -172,7 +172,7 @@ jobs:
           brew install --overwrite --quiet meson
 
       - name: download source
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: package_source
 
@@ -199,7 +199,7 @@ jobs:
     needs: [upload-src]
     steps:
       - name: prep MSYS2
-        uses: msys2/setup-msys2@v2.28.0
+        uses: msys2/setup-msys2@v2.32.0
         with:
           msystem: UCRT64
           install: >
@@ -209,7 +209,7 @@ jobs:
             mingw-w64-ucrt-x86_64-nasm
 
       - name: download source
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: package_source
       - name: extract source

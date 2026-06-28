@@ -37,16 +37,16 @@ jobs:
 
     steps:
       - name: Set up Docker Buildx
-        # v3.11.1
+        # v4.1.0
         # The hash below **must** be kept up-to-date with the 'Build and push' action
         # below.
-        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5
 
       - name: Log in to the Container registry
-        # v3.4.0
+        # v4.2.0
         # The hash below **must** be kept up-to-date with the 'Build and push' action
         # below.
-        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -54,23 +54,23 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        # v5.7.0
+        # v6.1.0
         # The hash below **must** be kept up-to-date with the 'Build and push' action
         # below.
-        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=raw,value={{date 'YYYY-MM-DD'}},enable={{is_default_branch}},priority=1000
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build and push
-        # v6.8.0
+        # v7.2.0
         # The hash below **must** be kept up-to-date with the 'Build and push' action
         # below.
-        uses: docker/bake-action@37816e747588cb137173af99ab33873600c46ea8
+        uses: docker/bake-action@6614cfa25eff9a0b2b2697efb0b6159e7680d584
         with:
           # The default git source pulls all submodules too, so use v6.8.0 instead.
           source: .
@@ -81,14 +81,14 @@ jobs:
           targets: ${{ matrix.arch }}
           # The hashes below **must** be kept up-to-date with the hashes above.
           set: |
-            *.args.DOCKER_SETUP_BUILDX_ACTION_VERSION=e468171a9de216ec08956ac3ada2f0791b6bd435
-            *.args.DOCKER_LOGIN_ACTION_VERSION=74a5d142397b4f367a81961eba4e8cd7edddf772
-            *.args.DOCKER_METADATA_ACTION_VERSION=902fa8ec7d6ecbf8d84d538b9b233a880e428804
-            *.args.DOCKER_BAKE_ACTION_VERSION=37816e747588cb137173af99ab33873600c46ea8
+            *.args.DOCKER_SETUP_BUILDX_ACTION_VERSION=d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5
+            *.args.DOCKER_LOGIN_ACTION_VERSION=650006c6eb7dba73a995cc03b0b2d7f5ca915bee
+            *.args.DOCKER_METADATA_ACTION_VERSION=80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9
+            *.args.DOCKER_BAKE_ACTION_VERSION=6614cfa25eff9a0b2b2697efb0b6159e7680d584
           push: true
 
       # - name: Generate artifact attestation
-      #   uses: actions/attest-build-provenance@v2
+      #   uses: actions/attest-build-provenance@v4
       #   with:
       #     subject-name: ${{ env.IMAGE_NAME }}
       #     # I don't know how to get the subject digest. See
