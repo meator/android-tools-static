@@ -42,6 +42,7 @@ nmeum_submodule_patches = {
     '0009-Don-t-use-the-internal-glibc-header-sys-cdefs.h.patch',
     '0011-core-include-missing-headers.patch',
     '0012-Add-explicit-import-for-algorithm.patch',
+    '0013-fix-missing-cstdint-includes.patch',
   ],
   'extras': [
     '0001-Don-t-use-the-internal-glibc-header-sys-cdefs.h.patch',
