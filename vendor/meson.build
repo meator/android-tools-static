@@ -295,7 +295,6 @@ endif
 # libbase
 #
 libbase_sources = [
-  'libbase/abi_compatibility.cpp',
   'libbase/chrono_utils.cpp',
   'libbase/file.cpp',
   'libbase/hex.cpp',
@@ -463,6 +462,8 @@ libadb_sources = files(
   'adb/client/bugreport.cpp',
   'adb/client/commandline.cpp',
   'adb/client/console.cpp',
+  'adb/client/detach.cpp',
+  'adb/client/discovered_services.cpp',
   'adb/client/file_sync_client.cpp',
   'adb/client/incremental.cpp',
   'adb/client/incremental_server.cpp',
@@ -471,6 +472,15 @@ libadb_sources = files(
   'adb/client/main.cpp',
   'adb/client/pairing/pairing_client.cpp',
   'adb/client/usb_libusb.cpp',
+  'adb/client/usb_libusb_device.cpp',
+  'adb/client/usb_libusb_hotplug.cpp',
+  'adb/client/usb_libusb_inhouse_hotplug.cpp',
+  'adb/client/transport_emulator.cpp',
+  'adb/client/mdns_tracker.cpp',
+  'adb/client/mdns_utils.cpp',
+  'adb/client/transport_mdns.cpp',
+  'adb/client/transport_usb.cpp',
+  'adb/client/pairing/pairing_client.cpp',
   'adb/pairing_auth/aes_128_gcm.cpp',
   'adb/pairing_auth/pairing_auth.cpp',
   'adb/pairing_connection/pairing_connection.cpp',
@@ -546,7 +556,8 @@ libadb_lib = static_library(
     gtest,
     libusb_dep,
     boringssl_crypto_inc_dep,
-    adbwinapi_deps
+    adbwinapi_deps,
+    fmt,
   ]
 )
 
@@ -751,8 +762,6 @@ adb_sources = [
   'adb/socket_spec.cpp',
   'adb/transport.cpp',
   'adb/transport_fd.cpp',
-  'adb/client/transport_local.cpp',
-  'adb/client/transport_usb.cpp',
   'adb/types.cpp',
   adb_proto_sources,
 ]
@@ -1026,6 +1035,7 @@ if host_machine.system() not in ['cygwin', 'windows']
     'selinux/libselinux/src/booleans.c',
     'selinux/libselinux/src/callbacks.c',
     'selinux/libselinux/src/freecon.c',
+    'selinux/libselinux/src/hashtab.c',
     'selinux/libselinux/src/label_backends_android.c',
     'selinux/libselinux/src/label.c',
     'selinux/libselinux/src/label_support.c',
