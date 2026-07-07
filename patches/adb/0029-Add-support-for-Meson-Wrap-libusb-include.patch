@@ -1,20 +1,24 @@
-From 0d31b973954191e188732182617a0fca72cf7a2a Mon Sep 17 00:00:00 2001
+From 0c14ccf72b1a4ee0031c62bd008cd31117dd26b4 Mon Sep 17 00:00:00 2001
 From: meator <meator.dev@gmail.com>
-Date: Tue, 26 Aug 2025 21:45:59 +0200
+Date: Tue, 7 Jul 2026 20:16:03 +0200
 Subject: [PATCH] Add support for Meson Wrap libusb include
 
 This is a modification of
 0005-Include-libusb-1.0-libusb.h-instead-of-libusb-libusb.patch made by
 android-tools-static.
 ---
- client/usb_libusb.cpp | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ client/usb_libusb_device.cpp          | 5 ++++-
+ client/usb_libusb_device.h            | 5 ++++-
+ client/usb_libusb_hotplug.cpp         | 5 ++++-
+ client/usb_libusb_hotplug.h           | 5 ++++-
+ client/usb_libusb_inhouse_hotplug.cpp | 5 ++++-
+ 5 files changed, 20 insertions(+), 5 deletions(-)
 
-diff --git a/client/usb_libusb.cpp b/client/usb_libusb.cpp
-index f533b55..6edd3ce 100644
---- a/client/usb_libusb.cpp
-+++ b/client/usb_libusb.cpp
-@@ -39,7 +39,10 @@
+diff --git a/client/usb_libusb_device.cpp b/client/usb_libusb_device.cpp
+index f75178e2..c72da6c8 100644
+--- a/client/usb_libusb_device.cpp
++++ b/client/usb_libusb_device.cpp
+@@ -31,7 +31,10 @@
  #ifdef ANDROID_TOOLS_USE_BUNDLED_LIBUSB
  #include <libusb/libusb.h>
  #else
@@ -26,6 +30,70 @@ index f533b55..6edd3ce 100644
  #endif
  
  #include <android-base/file.h>
+diff --git a/client/usb_libusb_device.h b/client/usb_libusb_device.h
+index 3e4316fe..435551b1 100644
+--- a/client/usb_libusb_device.h
++++ b/client/usb_libusb_device.h
+@@ -27,7 +27,10 @@
+ #ifdef ANDROID_TOOLS_USE_BUNDLED_LIBUSB
+ #include "libusb/libusb.h"
+ #else
+-#include <libusb-1.0/libusb.h>
++// nmeum/android-tools includes libusb-1.0/libusb.h instead. I don't know why.
++// libusb's pkg-config file adds libusb-1.0 to include directories, so let's
++// include the header directly
++#include <libusb.h>
+ #endif
+ 
+ // A session is started when a device is connected to a workstation. It ends upon its
+diff --git a/client/usb_libusb_hotplug.cpp b/client/usb_libusb_hotplug.cpp
+index 9570570d..5a52ddb0 100644
+--- a/client/usb_libusb_hotplug.cpp
++++ b/client/usb_libusb_hotplug.cpp
+@@ -38,7 +38,10 @@
+ #ifdef ANDROID_TOOLS_USE_BUNDLED_LIBUSB
+ #include "libusb/libusb.h"
+ #else
+-#include <libusb-1.0/libusb.h>
++// nmeum/android-tools includes libusb-1.0/libusb.h instead. I don't know why.
++// libusb's pkg-config file adds libusb-1.0 to include directories, so let's
++// include the header directly
++#include <libusb.h>
+ #endif
+ 
+ using namespace std::chrono_literals;
+diff --git a/client/usb_libusb_hotplug.h b/client/usb_libusb_hotplug.h
+index 3a2e2eb5..24fde27e 100644
+--- a/client/usb_libusb_hotplug.h
++++ b/client/usb_libusb_hotplug.h
+@@ -21,7 +21,10 @@
+ #ifdef ANDROID_TOOLS_USE_BUNDLED_LIBUSB
+ #include <libusb/libusb.h>
+ #else
+-#include <libusb-1.0/libusb.h>
++// nmeum/android-tools includes libusb-1.0/libusb.h instead. I don't know why.
++// libusb's pkg-config file adds libusb-1.0 to include directories, so let's
++// include the header directly
++#include <libusb.h>
+ #endif
+ 
+ namespace libusb {
+diff --git a/client/usb_libusb_inhouse_hotplug.cpp b/client/usb_libusb_inhouse_hotplug.cpp
+index 1199e0c6..e3752baa 100644
+--- a/client/usb_libusb_inhouse_hotplug.cpp
++++ b/client/usb_libusb_inhouse_hotplug.cpp
+@@ -26,7 +26,10 @@
+ #ifdef ANDROID_TOOLS_USE_BUNDLED_LIBUSB
+ #include "libusb/libusb.h"
+ #else
+-#include <libusb-1.0/libusb.h>
++// nmeum/android-tools includes libusb-1.0/libusb.h instead. I don't know why.
++// libusb's pkg-config file adds libusb-1.0 to include directories, so let's
++// include the header directly
++#include <libusb.h>
+ #endif
+ 
+ namespace libusb_inhouse_hotplug {
 -- 
-2.51.0
+2.54.0
 
