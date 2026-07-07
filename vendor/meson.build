@@ -24,7 +24,6 @@ nmeum_submodule_patches = {
     '0005-Include-libusb-1.0-libusb.h-instead-of-libusb-libusb.patch',
     '0006-Include-string.h-in-various-file-missing-it.patch',
     '0007-adb-Fix-unknown-__xx_write-member-in-std-ostream.patch',
-    '0008-adb-Disable-bonjour-check.patch',
     '0009-adb-Reduce-fallback-size-for-_SC_GETPW_R_SIZE_MAX.patch',
     '0010-sysdeps-don-t-over-eager-constexpr.patch',
     '0013-adb-disable-fastdeploy-support.patch',
@@ -34,15 +33,23 @@ nmeum_submodule_patches = {
     '0020-Fix-compilation-with-libusb-1.0.24.patch',
     '0023-Update-usage-of-usbdevfs_urb-to-match-new-kernel-UAP.patch',
     '0026-Drop-compile-static-check.patch',
-    '0027-Make-legacy-USB-driver-default-on-Linux.patch',
+    '0027-Address-reference-to-local-binding-build-error.patch',
+    '0028-Migrate-to-fmt-format.patch',
   ],
   'core': [
     '0001-Fix-inclusion-of-stdatomic.h-with-g.patch',
     '0004-fastboot-make-mke2fs_path-configurable.patch',
     '0009-Don-t-use-the-internal-glibc-header-sys-cdefs.h.patch',
+    '0010-Define-clang-only-nullability-specifiers-when-__clan.patch',
     '0011-core-include-missing-headers.patch',
     '0012-Add-explicit-import-for-algorithm.patch',
     '0013-fix-missing-cstdint-includes.patch',
+  ],
+  'e2fsprogs': [
+    '0001-misc-fix-missing-variable-names-in-function-prototyp.patch',
+  ],
+  'f2fs-tools': [
+    '0001-macOS-does-not-support-lsetxattr.patch',
   ],
   'extras': [
     '0001-Don-t-use-the-internal-glibc-header-sys-cdefs.h.patch',
@@ -58,20 +65,17 @@ nmeum_submodule_patches = {
   ],
   'libziparchive': [
     '0001-remove-glibc-internal-header-cdefs.h.patch',
-    '0002-Include-missing-cstdint-header.patch',
   ],
   'logging': [
     '0001-Don-t-use-the-internal-glibc-header-sys-cdefs.h.patch',
-    '0002-Fix-inclusion-of-stdatomic.h-with-g.patch',
-    '0004-fix-initializer-element-is-not-constant-error-when-b.patch',
   ],
 }
 
 added_submodule_patches = {
   'adb': [
-    '0028-Add-support-for-Meson-Wrap-libusb-include.patch',
-    '0029-WIN-fix-compilation.patch',
-    '0030-WIN-fix-pointer-casting.patch',
+    '0029-Add-support-for-Meson-Wrap-libusb-include.patch',
+    '0030-WIN-fix-compilation.patch',
+    '0031-WIN-fix-pointer-casting.patch',
   ],
   'libziparchive': [
     '0003-WIN-fix-static-assert-failure.patch',
