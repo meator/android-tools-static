@@ -3,17 +3,17 @@ target "docker-metadata-action" {}
 
 target "_common" {
   args = {
-    ALPINE_VERSION = "3.22"
+    ALPINE_VERSION = "3.24"
     # A fairly recent version of musl-cross-make is needed. There are multiple
     # features added in newer commits, for example
     # 5b3b4ea504c8b71764d815de76e35c8bc2aaa507, which adds support for Linux
     # kernel 6.15.7. Linux v6 added support for powerpc64 kernel headers.
     # android-tools need kernel headers, so this commit adds support for
     # powerpc64 android-tools.
-    MUSL_CROSS_MAKE_VERSION = "3635262e4524c991552789af6f36211a335a77b3"
+    MUSL_CROSS_MAKE_VERSION = "227df8b99103f9c59f6570babf892978e293082f"
     BINUTILS_VERSION = "2.44"
     GCC_VERSION = "14.2.0"
-    MUSL_VERSION = "1.2.5"
+    MUSL_VERSION = "1.2.6"
     GMP_VERSION = "6.3.0"
     MPC_VERSION = "1.3.1"
     MPFR_VERSION = "4.2.2"

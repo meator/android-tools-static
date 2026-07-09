@@ -38,16 +38,16 @@ jobs:
 
     steps:
       - name: Set up Docker Buildx
-        # v4.1.0
-        # The hash below **must** be kept up-to-date with the 'Build and push' action
-        # below.
-        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5
-
-      - name: Log in to the Container registry
         # v4.2.0
         # The hash below **must** be kept up-to-date with the 'Build and push' action
         # below.
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c
+
+      - name: Log in to the Container registry
+        # v4.4.0
+        # The hash below **must** be kept up-to-date with the 'Build and push' action
+        # below.
+        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -55,10 +55,10 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        # v6.1.0
+        # v6.2.0
         # The hash below **must** be kept up-to-date with the 'Build and push' action
         # below.
-        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
@@ -68,10 +68,10 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Build and push
-        # v7.2.0
+        # v7.3.0
         # The hash below **must** be kept up-to-date with the 'Build and push' action
         # below.
-        uses: docker/bake-action@6614cfa25eff9a0b2b2697efb0b6159e7680d584
+        uses: docker/bake-action@d3418bd7d0e9324001bca92fa8ba175ea7e6dc9b
         with:
           # The default git source pulls all submodules too, so use v6.8.0 instead.
           source: .
@@ -82,10 +82,10 @@ jobs:
           targets: ${{ matrix.arch }}
           # The hashes below **must** be kept up-to-date with the hashes above.
           set: |
-            *.args.DOCKER_SETUP_BUILDX_ACTION_VERSION=d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5
-            *.args.DOCKER_LOGIN_ACTION_VERSION=650006c6eb7dba73a995cc03b0b2d7f5ca915bee
-            *.args.DOCKER_METADATA_ACTION_VERSION=80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9
-            *.args.DOCKER_BAKE_ACTION_VERSION=6614cfa25eff9a0b2b2697efb0b6159e7680d584
+            *.args.DOCKER_SETUP_BUILDX_ACTION_VERSION=bb05f3f5519dd87d3ba754cc423b652a5edd6d2c
+            *.args.DOCKER_LOGIN_ACTION_VERSION=af1e73f918a031802d376d3c8bbc3fe56130a9b0
+            *.args.DOCKER_METADATA_ACTION_VERSION=dc802804100637a589fabce1cb79ff13a1411302
+            *.args.DOCKER_BAKE_ACTION_VERSION=d3418bd7d0e9324001bca92fa8ba175ea7e6dc9b
           push: true
 
       # - name: Generate artifact attestation
