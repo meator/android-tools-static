@@ -1,8 +1,8 @@
 [wrap-file]
-directory = AdbWinApi-35.0.2p2
-source_url = https://github.com/meator/AdbWinApi/releases/download/35.0.2p2/AdbWinApi-35.0.2p2.zip
-source_filename = AdbWinApi-35.0.2p2.zip
-source_hash = a378ac8123dd7a8aa6390823f0ffa63d2a25a17052d7be7557af355c0e51b2d0
+directory = AdbWinApi-36.0.1p3
+source_url = https://github.com/meator/AdbWinApi/releases/download/36.0.1p3/AdbWinApi-36.0.1p3.zip
+source_filename = AdbWinApi-36.0.1p3.zip
+source_hash = b210be845a3f17fe2d04f902652f5ac1847d67d85f2d66326931de259ebbc728
 
 [provide]
 dependency_names = AdbWinApi, AdbWinUsbApi
