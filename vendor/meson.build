@@ -55,7 +55,6 @@ nmeum_submodule_patches = {
     '0003-logging.h-only-activate-ostream-warnings-when-clang-.patch',
     '0004-Don-t-use-thread-safety-annotations-with-gcc.patch',
     '0006-remove-usage-of-__builtin_available.patch',
-    '0007-Include-missing-cstdint-header.patch',
   ],
   'libziparchive': [
     '0001-remove-glibc-internal-header-cdefs.h.patch',
