@@ -74,8 +74,7 @@ jobs:
         uses: docker/bake-action@d3418bd7d0e9324001bca92fa8ba175ea7e6dc9b
         with:
           # The default git source pulls all submodules too, so use v6.8.0 instead.
-          source: .
-          workdir: alpine-docker
+          source: ./alpine-docker
           files: |
             ./docker-bake.hcl
             cwd://${{ steps.meta.outputs.bake-file }}
