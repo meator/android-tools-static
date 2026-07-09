@@ -3,6 +3,7 @@ name: Build cross Docker containers
 on:
   push:
     paths:
+      - .github/workflows/cross-containers.yml
       - alpine-docker/config-aarch64.mak
       - alpine-docker/config-arm.mak
       - alpine-docker/config-armhf.mak
