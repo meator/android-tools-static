@@ -252,6 +252,8 @@ jobs:
             container_suffix: arm
           - arch: armv7l
             container_suffix: armhf
+          - arch: i686
+            container_suffix: i686
     container: ghcr.io/meator/musl-cross-make-alpine-${{ matrix.archinfo.container_suffix }}:latest
 
     steps:

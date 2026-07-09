@@ -9,6 +9,7 @@ on:
       - alpine-docker/config-base.mak
       - alpine-docker/config-powerpc64le.mak
       - alpine-docker/config-riscv64.mak
+      - alpine-docker/config-i686.mak
       - alpine-docker/docker-bake.hcl
       - alpine-docker/save-versions.py
       - alpine-docker/universal.Dockerfile
@@ -30,7 +31,7 @@ jobs:
 
     strategy:
       matrix:
-        arch: [aarch64, arm, armhf, powerpc64le, riscv64]
+        arch: [aarch64, arm, armhf, powerpc64le, riscv64, i686]
 
     env:
       IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/musl-cross-make-alpine-${{ matrix.arch }}

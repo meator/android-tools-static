@@ -62,3 +62,11 @@ target "riscv64" {
   }
   # tags = ["alpine-cross-riscv64"]
 }
+
+target "i686" {
+  inherits = ["docker-metadata-action", "_common"]
+  args = {
+    TARGET_MAK_FILE = "config-i686.mak"
+  }
+  # tags = ["alpine-cross-riscv64"]
+}

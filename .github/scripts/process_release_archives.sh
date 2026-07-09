@@ -98,7 +98,7 @@ function handle_archive_universally() {
 mkdir release-artifacts
 
 handle_archive_universally linux-build-x86_64/android-tools-static-linux-x86_64.tar linux x86_64
-for arch in aarch64 ppc64le riscv64 armv6l armv7l; do
+for arch in aarch64 ppc64le riscv64 armv6l armv7l i686; do
   handle_archive_universally linux-build-$arch/android-tools-static-linux-$arch.tar linux $arch
 done
 handle_archive_universally windows-build-x86_64/android-tools-static-windows-x86_64.tar windows x86_64
