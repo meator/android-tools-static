@@ -383,13 +383,6 @@ def get_base_document(
         "protobuf/0002-do-not-build-nonnative-protoc-during-cross-build.patch": _EPII(
             "optimization", "Do not build non-native (host machine) protoc", None, None
         ),
-        "protobuf/0003-fix-windows-symlinks.patch": _DPII(
-            "build",
-            "Do not use symlinks on Windows, since they require admin permissions or "
-            "a special setting enabled",
-            "WrapDB GitHub Pull request",
-            "https://github.com/mesonbuild/wrapdb/pull/2212",
-        ),
         "protobuf/0004-fix-gcc-15-release-compilation.patch": _DPII(
             "build",
             "Fixe protobuf compilation on MSYS2 in release mode.",

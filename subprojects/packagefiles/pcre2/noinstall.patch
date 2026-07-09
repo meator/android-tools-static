@@ -2,39 +2,39 @@ Do not install include files and library itself when it's an
 internal static library.
 --- a/meson.build
 +++ b/meson.build
-@@ -232,7 +232,6 @@
-   include_directories: includes,
+@@ -235,7 +235,6 @@
    c_args: [general_c_args, '-DPCRE2_CODE_UNIT_WIDTH=8'],
+   link_args: pcre2_8_link_args,
    version: pcre2_8_lib_version,
 -  install: true,
    gnu_symbol_visibility: 'hidden',
  )
  
-@@ -248,7 +247,6 @@
-   dependencies: libpcre2_8,
+@@ -254,7 +253,6 @@
    c_args: [general_c_args, '-DPCRE2_CODE_UNIT_WIDTH=8', pcre2_posix_defs],
+   link_args: pcre2_posix_link_args,
    version: pcre2_posix_lib_version,
 -  install: true,
    gnu_symbol_visibility: 'hidden',
  )
  
-@@ -265,7 +263,6 @@
-   include_directories: includes,
+@@ -274,7 +272,6 @@
    c_args: [general_c_args, '-DPCRE2_CODE_UNIT_WIDTH=16'],
+   link_args: pcre2_16_link_args,
    version: pcre2_16_lib_version,
 -  install: true,
    gnu_symbol_visibility: 'hidden',
  )
  
-@@ -282,7 +279,6 @@
-   include_directories: includes,
+@@ -294,7 +291,6 @@
    c_args: [general_c_args, '-DPCRE2_CODE_UNIT_WIDTH=32'],
+   link_args: pcre2_32_link_args,
    version: pcre2_32_lib_version,
 -  install: true,
    gnu_symbol_visibility: 'hidden',
  )
  
-@@ -298,37 +294,9 @@
+@@ -312,37 +308,9 @@
      'src/pcre2grep.c',
      dependencies: libpcre2_8,
      c_args: general_c_args,
