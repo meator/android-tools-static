@@ -42,26 +42,28 @@ nmeum_submodule_patches = {
     '0009-Don-t-use-the-internal-glibc-header-sys-cdefs.h.patch',
     '0010-Define-clang-only-nullability-specifiers-when-__clan.patch',
     '0011-core-include-missing-headers.patch',
-    '0012-Add-explicit-import-for-algorithm.patch',
     '0013-fix-missing-cstdint-includes.patch',
   ],
   'e2fsprogs': [
     '0001-misc-fix-missing-variable-names-in-function-prototyp.patch',
+  ],
+  'fs_mgr': [
+    '0001-fs_mgr-IWYU-include-algorithm-for-std-sort.patch',
   ],
   'f2fs-tools': [
     '0001-macOS-does-not-support-lsetxattr.patch',
   ],
   'extras': [
     '0001-Don-t-use-the-internal-glibc-header-sys-cdefs.h.patch',
-    '0002-libjsonpbparse-Fix-build-after-protobuf-util-Status-.patch',
-    '0003-extras-libjsonpb-Fix-incompatibility-with-protobuf-v.patch',
+    '0002-Add-__builtin_align_up-macro-when-builtin-is-not-ava.patch',
+    '0003-Address-JsonPrintOptions-initialization-errors.patch',
   ],
   'libbase': [
     '0001-android-base-endian.h-fix-build-on-musl.patch',
     '0002-remove-glibc-internal-headers-cdefs.h.patch',
     '0003-logging.h-only-activate-ostream-warnings-when-clang-.patch',
     '0004-Don-t-use-thread-safety-annotations-with-gcc.patch',
-    '0006-remove-usage-of-__builtin_available.patch',
+    '0005-Drop-dependency-on-resize_and_overwrite.patch',
   ],
   'libziparchive': [
     '0001-remove-glibc-internal-header-cdefs.h.patch',
@@ -507,6 +509,7 @@ elif host_machine.system() == 'darwin'
 else
   libadb_sources += [
     'adb/client/usb_linux.cpp',
+    'adb/client/usb_linux_netlink.cpp',
     'adb/sysdeps_unix.cpp',
     'adb/sysdeps/posix/network.cpp',
   ]
@@ -656,6 +659,7 @@ else
     'core/libcutils/socket_local_client_unix.cpp',
     'core/libcutils/socket_local_server_unix.cpp',
     'core/libcutils/socket_network_client_unix.cpp',
+    'core/libcutils/sockets_utils.cpp',
     'core/libcutils/sockets_unix.cpp',
     'core/libcutils/str_parms.cpp',
     'core/libcutils/trace-host.cpp',
@@ -884,17 +888,17 @@ libext4 = declare_dependency(
 #
 # partition
 #
-liblp_inc = 'core/fs_mgr/liblp/include'
+liblp_inc = 'fs_mgr/liblp/include'
 liblp_lib = static_library(
   'lp',
-  'core/fs_mgr/liblp/builder.cpp',
-  'core/fs_mgr/liblp/super_layout_builder.cpp',
-  'core/fs_mgr/liblp/images.cpp',
-  'core/fs_mgr/liblp/partition_opener.cpp',
-  'core/fs_mgr/liblp/property_fetcher.cpp',
-  'core/fs_mgr/liblp/reader.cpp',
-  'core/fs_mgr/liblp/utility.cpp',
-  'core/fs_mgr/liblp/writer.cpp',
+  'fs_mgr/liblp/builder.cpp',
+  'fs_mgr/liblp/super_layout_builder.cpp',
+  'fs_mgr/liblp/images.cpp',
+  'fs_mgr/liblp/partition_opener.cpp',
+  'fs_mgr/liblp/property_fetcher.cpp',
+  'fs_mgr/liblp/reader.cpp',
+  'fs_mgr/liblp/utility.cpp',
+  'fs_mgr/liblp/writer.cpp',
   link_with: libbase_lib,
   dependencies: [
     libext4, libsparse, boringssl_crypto, zlib, boringssl_crypto_inc_dep
@@ -909,25 +913,6 @@ liblp = declare_dependency(
 )
 
 if host_machine.system() not in ['cygwin', 'windows']
-  libjsonpbparse_inc = include_directories(
-    'extras/libjsonpb/parse/include',
-    # Added include:
-    'libbase/include',
-  )
-  libjsonpbparse_deps = [dependency('absl_status'), protobuf]
-  libjsonpbparse_lib = static_library(
-    'jsonpbparse',
-    'extras/libjsonpb/parse/jsonpb.cpp',
-    link_with: libbase_lib,
-    dependencies: libjsonpbparse_deps,
-    include_directories: libjsonpbparse_inc,
-  )
-  libjsonpbparse = declare_dependency(
-    link_with: libjsonpbparse_lib,
-    dependencies: libjsonpbparse_deps,
-    include_directories: libjsonpbparse_inc,
-  )
-
   dynamic_partitions_device_info_proto = custom_target(
     command: [
       protoc,
@@ -948,7 +933,7 @@ if host_machine.system() not in ['cygwin', 'windows']
     'extras/partition_tools/lpdump.cc',
     dynamic_partitions_device_info_proto,
     link_with: libbase_lib,
-    dependencies: [libjsonpbparse, liblp, protobuf],
+    dependencies: [liblp, protobuf],
   )
 
   executable(
@@ -1110,6 +1095,7 @@ fastboot_src = files(
   'core/fastboot/fastboot_driver.cpp',
   'core/fastboot/filesystem.cpp',
   'core/fastboot/fs.cpp',
+  'core/fastboot/h2h_workaround.cpp',
   'core/fastboot/main.cpp',
   'core/fastboot/socket.cpp',
   'core/fastboot/storage.cpp',
@@ -1141,8 +1127,8 @@ fastboot_inc = [
   'extras/ext4_utils/include',
   'extras/f2fs_utils',
   'mkbootimg/include/bootimg',
-  'core/fs_mgr/liblp/include',
-  'core/fs_mgr/libstorage_literals',
+  'fs_mgr/liblp/include',
+  'fs_mgr/libstorage_literals',
   'avb',
   version_header_inc,
 ]
