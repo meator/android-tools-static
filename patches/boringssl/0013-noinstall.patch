@@ -1,6 +1,6 @@
-From 8bf67fa06e49956115d5991f0ea848e2dfca10a5 Mon Sep 17 00:00:00 2001
+From 7dd5eeb1709a74f9027a37cb1937f0a8f392e4f1 Mon Sep 17 00:00:00 2001
 From: meator <meator.dev@gmail.com>
-Date: Tue, 7 Jul 2026 22:52:46 +0200
+Date: Fri, 10 Jul 2026 22:25:31 +0200
 Subject: [PATCH] noinstall
 
 Do not install include files and library itself when it's an
@@ -10,18 +10,18 @@ internal static library.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 51e0b4cf7..087786ef8 100644
+index 74b7f59a5..0e43365e1 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -41,7 +41,7 @@ enable_language(CXX)
+@@ -40,7 +40,7 @@ enable_language(CXX)
  include(CTest)
  include(GNUInstallDirs)
  
 -set(INSTALL_ENABLED 1)
 +set(INSTALL_ENABLED 0)
  
- if(CMAKE_VERSION VERSION_LESS 3.21 AND
-    CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+ if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT CMAKE_CROSSCOMPILING AND
+    BUILD_TESTING)
 -- 
 2.54.0
 
