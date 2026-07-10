@@ -162,6 +162,7 @@ endif
 cmake = import('cmake')
 
 boringssl_opts = cmake.subproject_options()
+boringssl_opts.add_cmake_defines({'BUILD_TESTING': false})
 # Meson's cmake module is limited. It doesn't seem to handle ASM building in
 # cross/i686 native well. The check below is likely too restrictive, but it's
 # better to err on the side of caution. This problem could be resolved by
