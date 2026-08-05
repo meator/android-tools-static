@@ -59,6 +59,7 @@ function handle_archive_universally() {
   mv "$NATIVELAYOUT" android-tools-static
 
   rm -rf android-tools-static/bash-completion/
+  rm -rf android-tools-static/zsh/
   rm android-tools-static/adb.1
 
   if [[ "$OS" == "windows" ]]; then
