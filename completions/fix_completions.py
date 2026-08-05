@@ -31,7 +31,7 @@ import argparse
 import shutil
 import sys
 
-_prefix = """
+_common_prefix = """
 # See https://github.com/nmeum/android-tools/issues/22
 
 function check_type() {
@@ -40,13 +40,34 @@ function check_type() {
 
 """.lstrip()
 
+_zsh_prefix = """
+# Zsh needs bashcompinit called to support bash-style completion.
+if ! declare -f complete >/dev/null; then
+    autoload -U bashcompinit && bashcompinit
+fi
+
+""".lstrip()
+
 if __name__ == "__main__":
-    argparse.ArgumentParser(
+    parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
-    ).parse_args()
+    )
 
-    sys.stdout.write(_prefix)
-    sys.stdout.flush()
+    subparsers = parser.add_subparsers(dest="shell", required=True)
+
+    subparsers.add_parser("bash")
+    subparsers.add_parser("zsh")
+
+    args = parser.parse_args()
+
+    match args.shell:
+        case "bash":
+            sys.stdout.write(_common_prefix)
+            sys.stdout.flush()
+        case "zsh":
+            sys.stdout.write(_common_prefix)
+            sys.stdout.write(_zsh_prefix)
+            sys.stdout.flush()
 
     shutil.copyfileobj(sys.stdin.buffer, sys.stdout.buffer, length=1024 * 64)

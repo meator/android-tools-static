@@ -12,24 +12,45 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-completionsdir = get_option('datadir') / 'bash-completion/completions'
+bash_dir = get_option('datadir') / 'bash-completion/completions'
+zsh_dir = get_option('datadir') / 'zsh/site-functions'
 
 custom_target(
   input: '../vendor/core/fastboot/fastboot.bash',
   output: 'fastboot',
-  command: 'fix_completions.py',
+  command: ['fix_completions.py', 'bash'],
   feed: true,
   capture: true,
   install: true,
-  install_dir: completionsdir
+  install_dir: bash_dir,
 )
 
 custom_target(
   input: '../vendor/adb/adb.bash',
   output: 'adb',
-  command: 'fix_completions.py',
+  command: ['fix_completions.py', 'bash'],
   feed: true,
   capture: true,
   install: true,
-  install_dir: completionsdir
+  install_dir: bash_dir,
+)
+
+custom_target(
+  input: '../vendor/core/fastboot/fastboot.bash',
+  output: '_fastboot',
+  command: ['fix_completions.py', 'zsh'],
+  feed: true,
+  capture: true,
+  install: true,
+  install_dir: zsh_dir,
+)
+
+custom_target(
+  input: '../vendor/adb/adb.bash',
+  output: '_adb',
+  command: ['fix_completions.py', 'zsh'],
+  feed: true,
+  capture: true,
+  install: true,
+  install_dir: zsh_dir,
 )
