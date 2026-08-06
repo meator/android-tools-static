@@ -87,7 +87,7 @@ jobs:
             gcc_pkg: mingw-w64-ucrt-x86_64-gcc
             cmake_pkg: mingw-w64-ucrt-x86_64-cmake
             nasm_pkg: mingw-w64-ucrt-x86_64-nasm
-          - arch: x86
+          - arch: i686
             msys2_env: MINGW32
             meson_pkg: mingw-w64-i686-meson
             gcc_pkg: mingw-w64-i686-gcc

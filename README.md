@@ -163,7 +163,10 @@ Another focus of this project is improved documentation and UX. The `meson.build
 A lot of effort has been put in to make sure that cross compilation works without problems (since it is used to build release archives for some targets).
 
 ## What architecture/OS names do you use?
-This project uses the same architecture and OS identifiers used in Meson: https://mesonbuild.com/Reference-tables.html A more human-readable form is sometimes provided in verbose output (for example `x86 (32bit)`, `aarch64 (ARM64)` - ARM64 is the more commonly used name on Windows).
+This project uses the same architecture and OS identifiers used in Meson: https://mesonbuild.com/Reference-tables.html with the exception of `x86`, which is called `i686`. A more human-readable form is sometimes provided in verbose output (for example `i686 (32bit)`, `aarch64 (ARM64)` - ARM64 is the more commonly used name on Windows).
+
+> [!WARNING]
+> Since version 36.0.1, Windows architecture name `x86` was renamed to `i686` for more consistency with the rest of the artifacts.
 
 ## What version of Windows do I need to use to be able to run Windows prebuilt executables?
 Windows 10 or newer is required. See the writeup [here](windows-compatibility.md).

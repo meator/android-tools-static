@@ -90,7 +90,7 @@ def _get_AdbWinApi(  # noqa: N802
     assert zip_name.endswith(".zip")
     assert zip_name.startswith("AdbWinApi-")
 
-    assert target.architecture in ("aarch64", "x86", "x86_64")
+    assert target.architecture in ("aarch64", "x86", "i686")
 
     sbom_name = (
         zip_name.removesuffix(".zip") + f"-{target.architecture}-sbom.cyclonedx.json"

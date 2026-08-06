@@ -103,7 +103,7 @@ for arch in aarch64 ppc64le riscv64 armv6l armv7l i686; do
   handle_archive_universally linux-build-$arch/android-tools-static-linux-$arch.tar linux $arch
 done
 handle_archive_universally windows-build-x86_64/android-tools-static-windows-x86_64.tar windows x86_64
-handle_archive_universally windows-build-x86/android-tools-static-windows-x86.tar windows x86
+handle_archive_universally windows-build-i686/android-tools-static-windows-i686.tar windows i686
 handle_archive_universally osx-build/android-tools-static-macos-universal2.tar macos universal2
 
 SOURCE_WIN_AR_NAME="android-tools-static-$PROJECT_VERSION-src-windows"
