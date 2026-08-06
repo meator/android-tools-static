@@ -90,10 +90,18 @@ def _get_AdbWinApi(  # noqa: N802
     assert zip_name.endswith(".zip")
     assert zip_name.startswith("AdbWinApi-")
 
-    assert target.architecture in ("aarch64", "x86", "i686")
+    assert target.architecture in ("aarch64", "i686", "x86_64")
+
+    adbwinapi_arch = target.architecture
+
+    if adbwinapi_arch == "i686":
+        # AdbWinApi uses x86, it does not use MSYS2, so it does not use components
+        # explicitly marked as i686. AdbWinApi also does logic based on Meson's
+        # .cpu_family() method, which does not know i686, but it knows x86.
+        adbwinapi_arch = "x86"
 
     sbom_name = (
-        zip_name.removesuffix(".zip") + f"-{target.architecture}-sbom.cyclonedx.json"
+        zip_name.removesuffix(".zip") + f"-{adbwinapi_arch}-sbom.cyclonedx.json"
     )
 
     url = url._replace(path=(url_path.parent / sbom_name).as_posix())
