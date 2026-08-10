@@ -6,4 +6,4 @@ source_filename = d32c35e573fc9c8dbe0436805cd557065892de4c.tar.gz
 source_hash = dfcd869755a78fccfafa574889e8732c2e3287ebdefc318270d07e8ed68a5d94
 method = cmake
 
-diff_files = boringssl/0001-boringssl-Add support for loongarch.patch, boringssl/0001-boringssl-Workaround-compiler-error-with-gcc-14-and-.patch, boringssl/0012-CMakeLists.txt-Disable-Werror-by-default.patch, boringssl/0013-noinstall.patch, boringssl/0014-add-ppc64le-support.patch, boringssl/0015-WIN-fix-compilation.patch
+diff_files = boringssl/0001-boringssl-Add support for loongarch.patch, boringssl/0001-boringssl-Workaround-compiler-error-with-gcc-14-and-.patch, boringssl/0002-boringssl-Add-support-for-powerpc-architecture.patch, boringssl/0012-CMakeLists.txt-Disable-Werror-by-default.patch, boringssl/0013-noinstall.patch, boringssl/0014-add-ppc64le-support.patch, boringssl/0015-WIN-fix-compilation.patch

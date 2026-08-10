@@ -46,6 +46,7 @@ nmeum_submodule_patches = {
   ],
   'e2fsprogs': [
     '0001-misc-fix-missing-variable-names-in-function-prototyp.patch',
+    '0002-e2fsprogs-Fix-building-for-powerpc-architecture.patch',
   ],
   'f2fs-tools': [
     '0001-macOS-does-not-support-lsetxattr.patch',
