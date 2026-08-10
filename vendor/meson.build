@@ -539,7 +539,8 @@ if host_machine.system() in ['cygwin', 'windows']
     '-DUNICODE',
     '-D_UNICODE',
     '-D_POSIX',
-    '-D_POSIX_SOURCE'
+    '-D_POSIX_SOURCE',
+    '-DNOCRYPT',
   ]
 endif
 
@@ -772,7 +773,7 @@ adb_args = []
 adb_ld_args = []
 
 if host_machine.system() in ['cygwin', 'windows']
-  adb_args += ['-D_GNU_SOURCE', '-D_POSIX', '-D_POSIX_SOURCE']
+  adb_args += ['-D_GNU_SOURCE', '-D_POSIX', '-D_POSIX_SOURCE', '-DNOCRYPT']
   adb_deps += [
     adbwinapi_deps,
     meson.get_compiler('cpp').find_library('ws2_32'),
