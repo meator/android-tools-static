@@ -310,7 +310,6 @@ libbase_sources = [
   'libbase/stringprintf.cpp',
   'libbase/strings.cpp',
   'libbase/threads.cpp',
-  'libbase/test_utils.cpp',
 ]
 
 if host_machine.system() in ['cygwin', 'windows']
